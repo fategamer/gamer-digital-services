@@ -53,6 +53,7 @@
     .btn-green { background: var(--green); color: #fff; }
     .btn-dark { background: var(--ink); color: #fff; }
     .btn-outline { background: #fff; color: var(--green-dark); border: 2px solid var(--green); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .hero {
       background: linear-gradient(120deg, #00a651, #005a2d);
       color: #fff; padding: 42px 0 36px; margin-bottom: 22px;
@@ -61,9 +62,17 @@
       font-size: clamp(28px, 6vw, 52px); line-height: 1.05;
       text-transform: uppercase; letter-spacing: -.5px;
     }
-    .hero p { margin-top: 10px; max-width: 540px; font-size: 17px; opacity: .95; }
+    .hero p { margin-top: 10px; max-width: 560px; font-size: 17px; opacity: .95; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
     .pill { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+    .how {
+      background: #fff; border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px 18px; margin-bottom: 18px; box-shadow: var(--shadow);
+    }
+    .how h2 { font-size: 16px; margin-bottom: 10px; color: var(--green-dark); }
+    .how ol { margin-left: 18px; color: var(--muted); font-size: 14px; }
+    .how li { margin: 6px 0; }
+    .how strong { color: var(--ink); }
     .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
     @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
     .card {
@@ -117,8 +126,37 @@
     .toast {
       position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%);
       background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px;
-      display: none; z-index: 40; font-size: 14px;
+      display: none; z-index: 50; font-size: 14px;
     }
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(16,34,23,.55);
+      display: none; align-items: flex-end; justify-content: center;
+      z-index: 60; padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: #fff; width: min(420px, 100%); border-radius: 20px 20px 16px 16px;
+      padding: 20px 18px 18px; box-shadow: 0 20px 50px rgba(0,0,0,.25);
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 18px; margin-bottom: 4px; }
+    .modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    .modal label { display: block; font-size: 13px; font-weight: 700; margin: 10px 0 4px; }
+    .modal input {
+      width: 100%; padding: 11px 12px; border: 2px solid var(--line);
+      border-radius: 12px; font-size: 16px; font-family: inherit;
+    }
+    .modal input:focus { outline: none; border-color: var(--green); }
+    .modal .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .modal .error { color: var(--red); font-size: 13px; font-weight: 700; margin-top: 6px; display: none; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .modal-actions .btn { flex: 1; }
+    .order-preview {
+      background: var(--green-soft); border-radius: 12px; padding: 10px 12px;
+      margin-top: 12px; font-size: 13px; display: none;
+    }
+    .order-preview strong { color: var(--green-dark); }
   </style>
 </head>
 <body>
@@ -138,14 +176,28 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p>Cheap data, minutes and SMS. Pay the exact amount to the till, then send the M-Pesa message on WhatsApp for confirmation.</p>
+      <p>Cheap data, minutes and SMS. Enter the phone that will receive the bundle, pay the exact amount to the till, then send the M-Pesa SMS on WhatsApp. We deliver after confirmation.</p>
       <div class="pills">
         <span class="pill">Lipa na M-Pesa</span>
-        <span class="pill">Daily + Monthly</span>
+        <span class="pill">Fast delivery</span>
         <span class="pill">Support on WhatsApp</span>
       </div>
     </div>
   </section>
+
+  <div class="wrap">
+    <div class="how">
+      <h2>How to order &amp; get delivery</h2>
+      <ol>
+        <li>Click <strong>Buy</strong> on the deal you want.</li>
+        <li>Enter the <strong>phone number that will receive the data / minutes / SMS</strong>.</li>
+        <li>You get an <strong>Order ID</strong> (e.g. GDS-7K2M). Keep it.</li>
+        <li>Pay the <strong>exact amount</strong> to till <strong id="howTill">6872649</strong> (Lipa na M-Pesa → Buy Goods).</li>
+        <li>Send the M-Pesa SMS on WhatsApp. Include your Order ID if asked.</li>
+        <li>We confirm payment and deliver to the number you gave.</li>
+      </ol>
+    </div>
+  </div>
 
   <main class="wrap grid" id="deals">
     <div>
@@ -178,25 +230,27 @@
         <div class="till" id="tillDigits"></div>
         <button class="btn btn-dark buy" id="copyTill">Copy till number</button>
         <ol class="steps">
+          <li>Click Buy → enter delivery phone</li>
           <li>M-Pesa → Lipa na M-Pesa → Buy Goods</li>
           <li>Enter till <b id="tillText"></b></li>
           <li>Pay the <b>exact</b> deal amount</li>
-          <li>Send the M-Pesa SMS on WhatsApp</li>
+          <li>Send M-Pesa SMS on WhatsApp (with Order ID)</li>
+          <li>We deliver to your number</li>
         </ol>
       </div>
       <div class="alert">
         <div>📣</div>
         <div>
           <b>ALERT!</b><br>
-          1GB – 1HR [4PM–11PM]<br>
-          250MBs – 24hrs
+          1GB – 1HR unavailable 4PM–11PM<br>
+          Some deals once per day only
         </div>
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
-        <p style="margin-bottom:10px">Questions or delayed delivery? Message us with your payment SMS.</p>
+        <p style="margin-bottom:10px">Delayed delivery or questions? Message us with your Order ID + M-Pesa SMS.</p>
         <a class="btn btn-green buy" id="waSide" target="_blank" rel="noopener">Chat on WhatsApp</a>
-        <p class="legal">Independent reseller. Not Safaricom, not an official telco shop. Delivery after payment confirmation on WhatsApp.</p>
+        <p class="legal">Independent reseller. Not Safaricom, not an official telco shop. Delivery only after payment confirmation on WhatsApp.</p>
       </div>
     </aside>
   </main>
@@ -210,6 +264,29 @@
 
   <a class="wa-float" id="waFloat" target="_blank" rel="noopener">WhatsApp</a>
   <div class="toast" id="toast">Copied</div>
+
+  <!-- Order modal -->
+  <div class="modal-backdrop" id="orderModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="modalTitle">Complete order</h3>
+      <p class="sub" id="modalSub">Enter the phone that will receive this deal.</p>
+
+      <label for="phoneInput">Delivery phone number *</label>
+      <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX or 01XX XXX XXX" autocomplete="tel" />
+      <p class="hint">This is the number that will receive the data / minutes / SMS.</p>
+      <p class="error" id="phoneError">Enter a valid Kenyan number (10 digits starting with 07 or 01).</p>
+
+      <label for="nameInput">Your name (optional)</label>
+      <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
+
+      <div class="order-preview" id="orderPreview"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
+        <button type="button" class="btn btn-green" id="modalConfirm">Continue to WhatsApp</button>
+      </div>
+    </div>
+  </div>
 
   <script src="config.js"></script>
   <script src="app.js"></script>

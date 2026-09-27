@@ -1,16 +1,20 @@
-# Gamer Digital Services — sell tonight
+# Gamer Digital Services — sell & deliver
 
 Independent shop. Brand of Gamer Innovation Network (Kenya).
-Till 6872649 · WhatsApp 0701 186 627
+Till **6872649** · WhatsApp **0701 186 627**
 
-## WhatsApp Status
+Customers now get an **Order ID** (e.g. GDS-7K2M) and must give the **delivery phone** before opening WhatsApp.
+
+---
+
+## WhatsApp Status (copy)
 
 GAMER DIGITAL SERVICES
 Pata data hata ukiwa na Okoa
 
-Lipa na M-Pesa Buy Goods
-Till: 6872649
-Then send the M-Pesa SMS here.
+1. Chagua deal → weka nambari ya kupokea
+2. Lipa till 6872649 (kiasi kamili)
+3. Tuma M-Pesa SMS hapa + Order ID
 
 Popular:
 20 = 250MB / 24hrs
@@ -20,30 +24,56 @@ Popular:
 
 Independent reseller. Not Safaricom.
 
-## First WhatsApp reply (copy)
+---
+
+## First reply (when they open chat with Order ID)
 
 Habari, karibu Gamer Digital Services.
 
-1. M-Pesa → Lipa na M-Pesa → Buy Goods
-2. Till 6872649
-3. Lipa kiasi kamili ya deal
-4. Tuma SMS ya M-Pesa hapa
+Nimeona order **[ORDER ID]**  
+Deal: **[TITLE]** — Ksh **[PRICE]**  
+Kupokea: **[PHONE]**
 
-Tutaconfirm kisha tutadeliver.
+1. Lipa kiasi kamili kwa till **6872649**  
+2. Tuma SMS ya M-Pesa hapa  
+
+Tutaconfirm kisha tutadeliver kwa nambari hiyo.
+
+---
 
 ## After they send M-Pesa SMS
 
-Nimepokea. Ninaangalia payment ya [CODE].
-Nitadeliver deal ya [NAME] sasa.
+Nimepokea. Ninaangalia payment ya order **[ORDER ID]**.
+
+Nitadeliver **[TITLE]** kwa **[PHONE]** sasa.
+
+(After you send the bundle)
+
+Deal imetumwa. Check balance. Asante!
+
+---
 
 ## If payment missing / wrong amount
 
-Tafadhali lipa kiasi kamili kwa till 6872649 kisha utume SMS hiyo hiyo.
+Tafadhali lipa kiasi kamili (**Ksh [PRICE]**) kwa till 6872649 kisha utume SMS hiyo hiyo + Order ID **[ORDER ID]**.
+
+---
+
+## If they forget Order ID
+
+Tafadhali tuma tena:  
+- Deal uliyochagua  
+- Nambari ya kupokea  
+- SMS ya M-Pesa  
+
+Tutakusaidia.
+
+---
 
 ## Bio (WhatsApp / Instagram)
 
-Gamer Digital Services
-Data · Minutes · SMS
-Till 6872649
-Hola / Kenya
+Gamer Digital Services  
+Data · Minutes · SMS  
+Till 6872649  
+Hola / Kenya  
 Independent shop · Gamer Innovation Network

@@ -4,21 +4,27 @@ Public deals brand of **Gamer Innovation Network** (Kenya).
 
 Repo: https://github.com/fategamer/gamer-digital-services
 
-Pages URL after first deploy:
-https://fategamer.github.io/gamer-digital-services/
+## Live
 
-## Buy flow
-1. M-Pesa → Lipa na M-Pesa → Buy Goods
-2. Till **6872649**
-3. Pay the exact deal amount
-4. Send the M-Pesa SMS on WhatsApp **0701 186 627**
+- Vercel project: `gamer-digital-services`
+- GitHub Pages (if enabled): https://fategamer.github.io/gamer-digital-services/
 
-Each **Buy** button opens WhatsApp with that deal pre-filled.
+## How the order → deliver flow works
 
-## Edit prices
+1. Customer clicks **Buy** on a deal.
+2. Modal asks for the **phone number that will receive** the data/minutes/SMS (required).
+3. Site generates an **Order ID** (e.g. `GDS-7K2M`).
+4. WhatsApp opens with a structured message: Order ID + deal + price + delivery phone.
+5. Customer pays exact amount to till **6872649** (Lipa na M-Pesa → Buy Goods).
+6. Customer sends the M-Pesa SMS on WhatsApp.
+7. You confirm payment and deliver to the number they gave.
+
+## Edit prices / deals
+
 Change `config.js` only.
 
-Status captions: `SELLING.md`.
+Owner reply scripts: `SELLING.md`.
 
-## Pages
-If the site is not live yet: GitHub repo → Settings → Pages → Source = GitHub Actions.
+## Tech
+
+Static site (HTML + config.js + app.js). No backend required.
