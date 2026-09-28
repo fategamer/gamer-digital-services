@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
   const payMethod = String(body.payMethod || "till").slice(0, 20);
   const gift = !!body.gift;
   const okoa = !!body.okoa;
-  const sendPrompt = body.sendPrompt !== false; // default true for gifts
+  const sendPrompt = body.sendPrompt !== false;
 
   if (!isValidKenyaPhone(phone)) return json(res, 400, { error: "Invalid delivery phone" });
   if (!amount || amount < 1) return json(res, 400, { error: "Invalid amount" });
@@ -67,12 +67,16 @@ module.exports = async function handler(req, res) {
     status: gift ? "pending_accept" : "pending_payment",
     giftLink,
     promptSent: false,
+    promptChannel: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     mpesaReceipt: null,
     paidAt: null,
     deliveredAt: null,
   };
+
+  // Save FIRST so Accept/Decline works even if SMS is slow
+  await saveOrder(order);
 
   let smsResult = null;
   if (gift && sendPrompt && giftLink) {
@@ -85,16 +89,30 @@ module.exports = async function handler(req, res) {
     try {
       smsResult = await sendSms(phone, msg);
       order.promptSent = !!(smsResult && smsResult.ok);
-      order.promptChannel = order.promptSent ? "sms" : hasSms() ? "sms_failed" : "not_configured";
+      order.promptChannel = order.promptSent
+        ? "sms"
+        : hasSms()
+          ? "sms_failed"
+          : "not_configured";
+      order.lastPromptAt = new Date().toISOString();
+      await saveOrder(order);
     } catch (e) {
       console.error("SMS", e.message);
       smsResult = { ok: false, error: e.message };
       order.promptChannel = "sms_error";
+      await saveOrder(order);
     }
   }
 
-  await saveOrder(order);
-  console.log("ORDER_CREATED", JSON.stringify({ orderId, gift, promptSent: order.promptSent }));
+  console.log(
+    "ORDER_CREATED",
+    JSON.stringify({
+      orderId,
+      gift,
+      promptSent: order.promptSent,
+      storage: storageMode(),
+    })
+  );
 
   const lines = [
     gift ? "🎁 GIFT INVITE" : "🛒 NEW ORDER",
@@ -103,9 +121,12 @@ module.exports = async function handler(req, res) {
     `Amount: Ksh ${amount}`,
     `${gift ? "Gift to" : "Deliver to"}: ${phone}`,
     name ? `From: ${name}` : null,
-    gift && order.promptSent ? "SMS prompt: SENT to friend" : null,
-    gift && !order.promptSent ? "SMS prompt: not sent (check AT keys)" : null,
+    gift && order.promptSent ? "SMS: SENT ✓" : null,
+    gift && !order.promptSent
+      ? "SMS: not sent — " + ((smsResult && smsResult.error) || order.promptChannel)
+      : null,
     giftLink ? `Link: ${giftLink}` : null,
+    `Store: ${storageMode()}`,
   ].filter(Boolean);
 
   try {
@@ -119,9 +140,13 @@ module.exports = async function handler(req, res) {
     till: process.env.PUBLIC_TILL || "6872649",
     giftLink,
     promptSent: !!order.promptSent,
-    promptChannel: order.promptChannel || null,
+    promptChannel: order.promptChannel,
     sms: smsResult
-      ? { ok: smsResult.ok, error: smsResult.error || null, status: smsResult.status || null }
+      ? {
+          ok: !!smsResult.ok,
+          error: smsResult.error || null,
+          status: smsResult.status || null,
+        }
       : null,
     smsConfigured: hasSms(),
     persistence: storageMode(),

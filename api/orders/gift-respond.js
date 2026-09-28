@@ -1,7 +1,3 @@
-/**
- * POST /api/orders/gift-respond
- * Body: { orderId, action: 'accept' | 'decline' }
- */
 const { getOrder, updateOrder, notifyTelegram } = require("../_lib/store");
 
 function json(res, status, body) {
@@ -16,13 +12,16 @@ function json(res, status, body) {
 module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return json(res, 204, {});
 
-  // GET ?orderId= — load gift for friend page
   if (req.method === "GET") {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const orderId = String(url.searchParams.get("orderId") || "");
     if (!orderId) return json(res, 400, { error: "orderId required" });
     const order = await getOrder(orderId);
-    if (!order) return json(res, 404, { error: "Gift not found or expired" });
+    if (!order) {
+      return json(res, 404, {
+        error: "Gift not found. Orders need GITHUB_TOKEN or Redis on Vercel to persist.",
+      });
+    }
     return json(res, 200, {
       ok: true,
       order: {
@@ -59,7 +58,11 @@ module.exports = async function handler(req, res) {
   }
 
   const order = await getOrder(orderId);
-  if (!order) return json(res, 404, { error: "Gift not found or expired" });
+  if (!order) {
+    return json(res, 404, {
+      error: "Gift not found. Set GITHUB_TOKEN on Vercel so gifts persist.",
+    });
+  }
 
   if (order.giftStatus === "accepted" || order.giftStatus === "declined") {
     return json(res, 200, {
@@ -75,7 +78,9 @@ module.exports = async function handler(req, res) {
     giftStatus,
     giftRespondedAt: new Date().toISOString(),
   };
-  if (action === "decline") {
+  if (action === "accept") {
+    patch.status = "pending_payment";
+  } else {
     patch.status = "cancelled";
   }
 
@@ -83,7 +88,7 @@ module.exports = async function handler(req, res) {
 
   try {
     await notifyTelegram(
-      (action === "accept" ? "✅ GIFT ACCEPTED" : "❌ GIFT DECLINED") +
+      (action === "accept" ? "✅ GIFT ACCEPTED — pay till" : "❌ GIFT DECLINED") +
         `\nOrder: ${orderId}\nDeal: ${order.title}\nPhone: ${order.phone}\nKsh ${order.amount}`
     );
   } catch (e) {}
