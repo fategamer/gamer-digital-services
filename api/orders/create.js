@@ -1,6 +1,5 @@
 /**
  * POST /api/orders/create
- * Creates a real server-side order, notifies Telegram, returns orderId.
  */
 const {
   saveOrder,
@@ -41,6 +40,8 @@ module.exports = async function handler(req, res) {
   const ref = String(body.ref || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
   const network = String(body.network || "Safaricom").slice(0, 20);
   const payMethod = String(body.payMethod || "pending").slice(0, 20);
+  const gift = !!body.gift;
+  const okoa = !!body.okoa;
 
   if (!isValidKenyaPhone(phone)) {
     return json(res, 400, { error: "Invalid delivery phone" });
@@ -49,9 +50,10 @@ module.exports = async function handler(req, res) {
     return json(res, 400, { error: "Invalid amount" });
   }
 
-  const orderId = body.orderId && /^GDS-[A-Z0-9]{4}$/.test(body.orderId)
-    ? body.orderId
-    : makeOrderId();
+  const orderId =
+    body.orderId && /^GDS-[A-Z0-9]{4}$/.test(body.orderId)
+      ? body.orderId
+      : makeOrderId();
 
   const order = {
     orderId,
@@ -62,6 +64,8 @@ module.exports = async function handler(req, res) {
     ref: ref || null,
     network,
     payMethod,
+    gift,
+    okoa,
     status: "pending_payment",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -74,16 +78,16 @@ module.exports = async function handler(req, res) {
   console.log("ORDER_CREATED", JSON.stringify(order));
 
   const lines = [
-    "🛒 NEW ORDER",
+    gift ? "🎁 GIFT ORDER" : "🛒 NEW ORDER",
     `ID: ${orderId}`,
     `Deal: ${title}`,
     `Amount: Ksh ${amount}`,
-    `Deliver to: ${phone}`,
+    `${gift ? "Gift to" : "Deliver to"}: ${phone}`,
     name ? `Name: ${name}` : null,
     ref ? `Ref: ${ref}` : null,
+    okoa ? "Okoa: yes" : null,
     `Network: ${network}`,
     `Pay: ${payMethod}`,
-    `Status: pending_payment`,
   ].filter(Boolean);
 
   try {
