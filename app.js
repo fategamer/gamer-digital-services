@@ -1,4 +1,4 @@
-/* Till-first + gift Accept/Decline link for friend */
+/* Gift = SMS prompt to friend's number + Accept/Decline link */
 (function () {
   function showBoot(msg) {
     var el = document.getElementById("bootError");
@@ -10,7 +10,7 @@
 
   var C = window.BINGWA;
   if (!C) {
-    showBoot("Config failed. Open https://gamer-digital-services.vercel.app/?v=gift2");
+    showBoot("Open https://gamer-digital-services.vercel.app/?v=sms1");
     return;
   }
 
@@ -27,7 +27,7 @@
     t.style.display = "block";
     setTimeout(function () {
       t.style.display = "none";
-    }, 2800);
+    }, 3200);
   }
 
   function normalizePhone(raw) {
@@ -93,7 +93,6 @@
     var v = ($("refInput") && $("refInput").value) || "";
     if (!v.trim()) return toast("Enter code");
     setRef(v);
-    toast("Referral applied");
   });
   on($("clearRef"), "click", function () {
     setRef("");
@@ -110,10 +109,6 @@
       el.classList.toggle("on", el.dataset.filter === (okoaOnly ? "okoa" : "all"));
     });
     if ($("pillOkoa")) $("pillOkoa").classList.toggle("on", okoaOnly);
-    if ($("dataNote"))
-      $("dataNote").textContent = okoaOnly
-        ? "Okoa-friendly only"
-        : "Buy self or Gift (friend Accept/Decline)";
     renderData();
     switchTab("data");
   }
@@ -149,7 +144,7 @@
     "https://wa.me/" +
     C.whatsapp +
     "?text=" +
-    encodeURIComponent("Habari, naomba help. Order ID:");
+    encodeURIComponent("Habari, naomba help.");
   ["waTop", "waSide"].forEach(function (id) {
     if ($(id)) $(id).href = helpUrl;
   });
@@ -161,14 +156,12 @@
 
   var why = $("whyList");
   if (why) {
-    (
-      C.features || [
-        "Pay via M-Pesa till",
-        "Gift: friend Accept or Decline",
-        "Order ID on this site",
-        "WhatsApp optional",
-      ]
-    ).forEach(function (f) {
+    [
+      "Gift SMS goes to friend's number",
+      "Friend Accepts or Declines",
+      "You pay M-Pesa till",
+      "Order ID on this site",
+    ].forEach(function (f) {
       var li = document.createElement("li");
       li.textContent = f;
       why.appendChild(li);
@@ -186,11 +179,10 @@
   }
 
   on($("copyTill"), "click", function () {
-    if (navigator.clipboard) {
+    if (navigator.clipboard)
       navigator.clipboard.writeText(C.till).then(function () {
-        toast("Till " + C.till + " copied");
+        toast("Till " + C.till);
       });
-    } else toast("Till: " + C.till);
   });
 
   function createServerOrder(deal, phone, name, payMethod, isGift) {
@@ -207,6 +199,7 @@
         payMethod: payMethod || "till",
         gift: !!isGift,
         okoa: !!deal.okOa,
+        sendPrompt: !!isGift,
       }),
     }).then(function (res) {
       return res.json().then(function (data) {
@@ -236,12 +229,16 @@
     if ($("pillGift")) $("pillGift").classList.toggle("on", giftMode);
     if ($("phoneLabel"))
       $("phoneLabel").textContent = giftMode
-        ? "Friend's phone *"
+        ? "Friend's phone (gets SMS prompt) *"
         : "Your phone *";
     if ($("phoneHint"))
       $("phoneHint").textContent = giftMode
-        ? "They get a link to Accept or Decline. You pay till after they accept."
-        : "Pay till · bundle on this number.";
+        ? "We SMS them a link to Accept or Decline."
+        : "Bundle loads on this number after you pay till.";
+    if (btnConfirm)
+      btnConfirm.textContent = giftMode
+        ? "Send prompt to this number"
+        : "Create order & show till";
   }
   on($("modeSelf"), "click", function () {
     setGiftMode(false);
@@ -269,8 +266,7 @@
     updateRefUI();
     if (formStep) formStep.style.display = "block";
     if (successBox) successBox.classList.remove("show");
-    var giftBlock = $("giftLinkBlock");
-    if (giftBlock) giftBlock.style.display = "none";
+    if ($("giftLinkBlock")) $("giftLinkBlock").style.display = "none";
     if (btnConfirm) btnConfirm.disabled = false;
     if (modal) modal.classList.add("open");
     setTimeout(function () {
@@ -293,7 +289,6 @@
     if (deal) openModal(deal, true);
   });
   on($("pillGift"), "click", function () {
-    setGiftMode(true);
     toast("Tap Gift on a deal");
   });
 
@@ -302,7 +297,6 @@
     var phone = normalizePhone(phoneInput && phoneInput.value);
     if (!isValidKenyaPhone(phone)) {
       if (phoneError) phoneError.style.display = "block";
-      if (phoneInput) phoneInput.focus();
       return null;
     }
     if (phoneError) phoneError.style.display = "none";
@@ -313,42 +307,72 @@
   }
 
   function giftLinkFor(orderId) {
-    return (
-      (C.siteUrl || location.origin).replace(/\/$/, "") +
-      "/gift.html?id=" +
-      encodeURIComponent(orderId)
-    );
+    return location.origin + "/gift.html?id=" + encodeURIComponent(orderId);
   }
 
-  function showSuccess(order, apiGiftLink) {
+  function showSuccess(order, api) {
     lastOrder = order;
+    api = api || {};
     if (formStep) formStep.style.display = "none";
     if (successBox) successBox.classList.add("show");
     if ($("successOid")) $("successOid").textContent = order.orderId;
 
-    var link = apiGiftLink || (order.gift ? giftLinkFor(order.orderId) : "");
+    var link = api.giftLink || (order.gift ? giftLinkFor(order.orderId) : "");
     order.giftLink = link;
 
-    if (order.gift && link) {
-      if ($("successPay"))
-        $("successPay").textContent =
-          "Send this link to your friend → they Accept or Decline";
+    var promptEl = $("promptStatus");
+    if (order.gift) {
+      if (api.promptSent) {
+        if ($("successPay"))
+          $("successPay").textContent =
+            "✓ Prompt sent to " + order.phone;
+        if (promptEl) {
+          promptEl.style.display = "block";
+          promptEl.textContent =
+            "Friend should receive an SMS with Accept / Decline. After they Accept, pay till " +
+            C.till +
+            " (Ksh " +
+            order.price +
+            ").";
+        }
+      } else if (api.smsConfigured === false) {
+        if ($("successPay"))
+          $("successPay").textContent =
+            "SMS not set up yet — use link below";
+        if (promptEl) {
+          promptEl.style.display = "block";
+          promptEl.textContent =
+            "Add Africa's Talking keys on Vercel so the prompt SMS goes to " +
+            order.phone +
+            " automatically.";
+        }
+      } else {
+        if ($("successPay"))
+          $("successPay").textContent =
+            "Could not SMS " + order.phone + " — share link";
+        if (promptEl) {
+          promptEl.style.display = "block";
+          promptEl.textContent =
+            (api.sms && api.sms.error) ||
+            "SMS failed. Copy the gift link and send it to them.";
+        }
+      }
       if ($("successPhone"))
-        $("successPhone").textContent = "Gift to: " + order.phone;
-      var gb = $("giftLinkBlock");
-      if (gb) {
-        gb.style.display = "block";
+        $("successPhone").textContent = "Number: " + order.phone;
+      if ($("giftLinkBlock") && link) {
+        $("giftLinkBlock").style.display = "block";
         if ($("giftLinkText")) $("giftLinkText").textContent = link;
       }
       if ($("successTillHint"))
         $("successTillHint").textContent =
-          "After they Accept, pay Ksh " + order.price + " to till " + C.till;
+          "After Accept → pay Ksh " + order.price + " till " + C.till;
     } else {
       if ($("successPay"))
         $("successPay").textContent =
           "Pay Ksh " + order.price + " to till " + C.till;
       if ($("successPhone"))
         $("successPhone").textContent = "Deliver to: " + order.phone;
+      if (promptEl) promptEl.style.display = "none";
       if ($("giftLinkBlock")) $("giftLinkBlock").style.display = "none";
       if ($("successTillHint"))
         $("successTillHint").textContent =
@@ -362,9 +386,7 @@
         "https://wa.me/" +
         C.whatsapp +
         "?text=" +
-        encodeURIComponent(
-          "Order " + order.orderId + " · " + order.phone + " · Ksh " + order.price
-        );
+        encodeURIComponent("Order " + order.orderId);
     }
   }
 
@@ -376,7 +398,7 @@
       stkStatus.style.display = "block";
       stkStatus.className = "stk-status";
       stkStatus.textContent = giftMode
-        ? "Creating gift invite…"
+        ? "Sending prompt to " + v.phone + "…"
         : "Creating order…";
     }
     createServerOrder(currentDeal, v.phone, v.name, "till", giftMode)
@@ -389,13 +411,15 @@
             title: currentDeal.title,
             gift: giftMode,
           },
-          data.giftLink
+          data
         );
-        toast(
-          giftMode
-            ? "Gift link ready — send to friend"
-            : "Order " + data.orderId + " — pay till"
-        );
+        if (giftMode && data.promptSent) {
+          toast("Prompt sent to " + v.phone);
+        } else if (giftMode) {
+          toast("Gift created — SMS needs AT keys (link ready)");
+        } else {
+          toast("Order " + data.orderId + " — pay till");
+        }
       })
       .catch(function (e) {
         if (stkStatus) {
@@ -409,51 +433,37 @@
 
   on($("copyOrderBtn"), "click", function () {
     if (!lastOrder) return;
-    var text;
-    if (lastOrder.gift && lastOrder.giftLink) {
-      text =
-        "Habari, nimekutengenezea gift ya data.\n" +
-        lastOrder.title +
-        " (Ksh " +
-        lastOrder.price +
-        ")\n" +
-        "Fungua link hii Accept au Decline:\n" +
-        lastOrder.giftLink;
-    } else {
-      text =
-        "Order ID: " +
-        lastOrder.orderId +
-        "\nDeal: " +
-        lastOrder.title +
-        "\nAmount: Ksh " +
-        lastOrder.price +
-        "\nTill: " +
-        C.till +
-        "\nDeliver: " +
-        lastOrder.phone;
-    }
-    if (navigator.clipboard) {
+    var text =
+      lastOrder.gift && lastOrder.giftLink
+        ? "Habari, nimekutengenezea gift.\n" +
+          lastOrder.title +
+          "\nAccept or Decline:\n" +
+          lastOrder.giftLink
+        : "Order " +
+          lastOrder.orderId +
+          "\nKsh " +
+          lastOrder.price +
+          " till " +
+          C.till;
+    if (navigator.clipboard)
       navigator.clipboard.writeText(text).then(function () {
-        toast(lastOrder.gift ? "Gift message + link copied" : "Order details copied");
+        toast("Copied");
       });
-    } else toast(text);
   });
 
   on($("copyGiftLinkBtn"), "click", function () {
     if (!lastOrder || !lastOrder.giftLink) return;
-    if (navigator.clipboard) {
+    if (navigator.clipboard)
       navigator.clipboard.writeText(lastOrder.giftLink).then(function () {
-        toast("Gift link copied — send to friend");
+        toast("Link copied");
       });
-    } else toast(lastOrder.giftLink);
   });
 
   on(btnStk, "click", function () {
     var v = validatePhone();
     if (!v) return;
-    btnStk.disabled = true;
-    createServerOrder(currentDeal, v.phone, v.name, "stk", giftMode)
-      .then(function (data) {
+    createServerOrder(currentDeal, v.phone, v.name, "stk", giftMode).then(
+      function (data) {
         showSuccess(
           {
             orderId: data.orderId,
@@ -462,30 +472,10 @@
             title: currentDeal.title,
             gift: giftMode,
           },
-          data.giftLink
+          data
         );
-        return fetch("/api/mpesa/stk", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phone: v.phone,
-            amount: currentDeal.price,
-            orderId: data.orderId,
-            dealTitle: currentDeal.title,
-          }),
-        }).then(function (r) {
-          return r.json();
-        });
-      })
-      .then(function (stk) {
-        if (stk && stk.ok) toast("Enter M-Pesa PIN");
-        else toast((stk && stk.error) || "Use till");
-        btnStk.disabled = false;
-      })
-      .catch(function (e) {
-        toast(e.message || "Error");
-        btnStk.disabled = false;
-      });
+      }
+    );
   });
 
   var dealIndex = {};
@@ -534,9 +524,8 @@
     var item = dealIndex[btn.getAttribute("data-id")];
     if (!item) return;
     e.preventDefault();
-    var act = btn.getAttribute("data-act");
-    if (act === "buy") openModal(item, false);
-    else if (act === "gift") openModal(item, true);
+    if (btn.getAttribute("data-act") === "buy") openModal(item, false);
+    else if (btn.getAttribute("data-act") === "gift") openModal(item, true);
   });
 
   function renderData() {
@@ -557,16 +546,12 @@
   if (faqRoot) {
     [
       {
+        q: "How does the friend get the prompt?",
+        a: "When you Gift and enter their number, the site sends them an SMS with Accept / Decline. You need Africa's Talking SMS keys on Vercel.",
+      },
+      {
         q: "Do I need WhatsApp?",
-        a: "No. Orders and gift Accept/Decline work on this website. WhatsApp is optional help only.",
-      },
-      {
-        q: "How does gifting work?",
-        a: "Tap Gift → enter friend's number → create order → copy the gift link → send it any way (SMS, Telegram, etc.). Friend opens link and taps Accept or Decline. After Accept, you pay the till.",
-      },
-      {
-        q: "When is data delivered?",
-        a: "After payment is confirmed on the till against your Order ID (and gift accepted if it was a gift).",
+        a: "No. SMS prompt + till payment. WhatsApp is only optional help.",
       },
     ].forEach(function (item) {
       var d = document.createElement("details");
@@ -583,6 +568,4 @@
       if (d && d.mpesa && btnStk) btnStk.style.display = "inline-flex";
     })
     .catch(function () {});
-
-  toast("Gift: friend Accept / Decline on link");
 })();
