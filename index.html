@@ -128,7 +128,6 @@
       background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px;
       display: none; z-index: 50; font-size: 14px;
     }
-    /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(16,34,23,.55);
       display: none; align-items: flex-end; justify-content: center;
@@ -150,13 +149,20 @@
     .modal input:focus { outline: none; border-color: var(--green); }
     .modal .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
     .modal .error { color: var(--red); font-size: 13px; font-weight: 700; margin-top: 6px; display: none; }
-    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-    .modal-actions .btn { flex: 1; }
+    .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .modal-actions-row { display: flex; gap: 8px; }
+    .modal-actions-row .btn { flex: 1; }
     .order-preview {
       background: var(--green-soft); border-radius: 12px; padding: 10px 12px;
       margin-top: 12px; font-size: 13px; display: none;
     }
     .order-preview strong { color: var(--green-dark); }
+    .stk-status {
+      margin-top: 10px; font-size: 13px; font-weight: 700; display: none;
+      padding: 8px 10px; border-radius: 10px; background: #f0f4f2;
+    }
+    .stk-status.ok { background: var(--green-soft); color: var(--green-dark); }
+    .stk-status.err { background: #fde8e8; color: var(--red); }
   </style>
 </head>
 <body>
@@ -176,11 +182,11 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p>Cheap data, minutes and SMS. Enter the phone that will receive the bundle, pay the exact amount to the till, then send the M-Pesa SMS on WhatsApp. We deliver after confirmation.</p>
+      <p>Cheap data, minutes and SMS. Enter delivery phone, pay with M-Pesa (STK or till), then we deliver after confirmation.</p>
       <div class="pills">
         <span class="pill">Lipa na M-Pesa</span>
-        <span class="pill">Fast delivery</span>
-        <span class="pill">Support on WhatsApp</span>
+        <span class="pill">STK Push</span>
+        <span class="pill">WhatsApp support</span>
       </div>
     </div>
   </section>
@@ -190,11 +196,11 @@
       <h2>How to order &amp; get delivery</h2>
       <ol>
         <li>Click <strong>Buy</strong> on the deal you want.</li>
-        <li>Enter the <strong>phone number that will receive the data / minutes / SMS</strong>.</li>
-        <li>You get an <strong>Order ID</strong> (e.g. GDS-7K2M). Keep it.</li>
-        <li>Pay the <strong>exact amount</strong> to till <strong id="howTill">6872649</strong> (Lipa na M-Pesa → Buy Goods).</li>
-        <li>Send the M-Pesa SMS on WhatsApp. Include your Order ID if asked.</li>
-        <li>We confirm payment and deliver to the number you gave.</li>
+        <li>Enter the <strong>phone number that will receive</strong> the data / minutes / SMS.</li>
+        <li>You get an <strong>Order ID</strong> (e.g. GDS-7K2M).</li>
+        <li><strong>Option A:</strong> Tap <strong>Pay with M-Pesa</strong> → enter PIN on the prompt on your phone.</li>
+        <li><strong>Option B:</strong> Pay exact amount to till <strong id="howTill">6872649</strong>, then send M-Pesa SMS on WhatsApp with Order ID.</li>
+        <li>We confirm and deliver to the number you gave.</li>
       </ol>
     </div>
   </div>
@@ -231,11 +237,9 @@
         <button class="btn btn-dark buy" id="copyTill">Copy till number</button>
         <ol class="steps">
           <li>Click Buy → enter delivery phone</li>
-          <li>M-Pesa → Lipa na M-Pesa → Buy Goods</li>
-          <li>Enter till <b id="tillText"></b></li>
-          <li>Pay the <b>exact</b> deal amount</li>
-          <li>Send M-Pesa SMS on WhatsApp (with Order ID)</li>
-          <li>We deliver to your number</li>
+          <li>Pay via <b>STK prompt</b> or till <b id="tillText"></b></li>
+          <li>Keep your <b>Order ID</b></li>
+          <li>We deliver after confirmation</li>
         </ol>
       </div>
       <div class="alert">
@@ -248,9 +252,9 @@
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
-        <p style="margin-bottom:10px">Delayed delivery or questions? Message us with your Order ID + M-Pesa SMS.</p>
+        <p style="margin-bottom:10px">Delayed delivery? Message us with Order ID + M-Pesa SMS / receipt.</p>
         <a class="btn btn-green buy" id="waSide" target="_blank" rel="noopener">Chat on WhatsApp</a>
-        <p class="legal">Independent reseller. Not Safaricom, not an official telco shop. Delivery only after payment confirmation on WhatsApp.</p>
+        <p class="legal">Independent reseller. Not Safaricom. Delivery after payment confirmation.</p>
       </div>
     </aside>
   </main>
@@ -265,7 +269,6 @@
   <a class="wa-float" id="waFloat" target="_blank" rel="noopener">WhatsApp</a>
   <div class="toast" id="toast">Copied</div>
 
-  <!-- Order modal -->
   <div class="modal-backdrop" id="orderModal" role="dialog" aria-modal="true">
     <div class="modal">
       <h3 id="modalTitle">Complete order</h3>
@@ -273,17 +276,21 @@
 
       <label for="phoneInput">Delivery phone number *</label>
       <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX or 01XX XXX XXX" autocomplete="tel" />
-      <p class="hint">This is the number that will receive the data / minutes / SMS.</p>
+      <p class="hint">This number receives the data / minutes / SMS. STK prompt also goes here.</p>
       <p class="error" id="phoneError">Enter a valid Kenyan number (10 digits starting with 07 or 01).</p>
 
       <label for="nameInput">Your name (optional)</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
 
       <div class="order-preview" id="orderPreview"></div>
+      <div class="stk-status" id="stkStatus"></div>
 
       <div class="modal-actions">
-        <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
-        <button type="button" class="btn btn-green" id="modalConfirm">Continue to WhatsApp</button>
+        <button type="button" class="btn btn-green" id="modalStk" style="display:none">Pay with M-Pesa (STK)</button>
+        <div class="modal-actions-row">
+          <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
+          <button type="button" class="btn btn-dark" id="modalConfirm">Till + WhatsApp</button>
+        </div>
       </div>
     </div>
   </div>

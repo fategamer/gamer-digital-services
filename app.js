@@ -45,8 +45,8 @@
     return /^0[17]\d{8}$/.test(p);
   }
 
-  // Modal state
   let currentDeal = null;
+  let lastOrderId = null;
   const modal = document.getElementById("orderModal");
   const phoneInput = document.getElementById("phoneInput");
   const nameInput = document.getElementById("nameInput");
@@ -54,15 +54,25 @@
   const orderPreview = document.getElementById("orderPreview");
   const modalTitle = document.getElementById("modalTitle");
   const modalSub = document.getElementById("modalSub");
+  const stkStatus = document.getElementById("stkStatus");
+  const btnStk = document.getElementById("modalStk");
+  const btnWa = document.getElementById("modalConfirm");
 
   function openModal(item) {
     currentDeal = item;
+    lastOrderId = null;
     modalTitle.textContent = item.title;
     modalSub.textContent = `Ksh ${item.price} · Enter the phone that will receive this deal.`;
     phoneInput.value = "";
     nameInput.value = "";
     phoneError.style.display = "none";
     orderPreview.style.display = "none";
+    if (stkStatus) {
+      stkStatus.style.display = "none";
+      stkStatus.textContent = "";
+    }
+    if (btnStk) btnStk.disabled = false;
+    if (btnWa) btnWa.disabled = false;
     modal.classList.add("open");
     setTimeout(() => phoneInput.focus(), 50);
   }
@@ -80,42 +90,115 @@
     if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
   });
 
-  document.getElementById("modalConfirm").addEventListener("click", () => {
-    if (!currentDeal) return;
+  function validate() {
+    if (!currentDeal) return null;
     const phone = normalizePhone(phoneInput.value);
     if (!isValidKenyaPhone(phone)) {
       phoneError.style.display = "block";
       phoneInput.focus();
-      return;
+      return null;
     }
     phoneError.style.display = "none";
+    return {
+      phone,
+      name: (nameInput.value || "").trim(),
+      orderId: lastOrderId || makeOrderId(),
+    };
+  }
 
-    const orderId = makeOrderId();
-    const name = (nameInput.value || "").trim();
+  function showPreview(orderId, phone, amount) {
+    lastOrderId = orderId;
+    orderPreview.innerHTML = `<strong>Order ID: ${orderId}</strong><br>Delivery to: ${phone}<br>Amount: Ksh ${amount}`;
+    orderPreview.style.display = "block";
+  }
+
+  // WhatsApp / till path (always works)
+  btnWa.addEventListener("click", () => {
+    const v = validate();
+    if (!v) return;
+    lastOrderId = v.orderId;
+    showPreview(v.orderId, v.phone, currentDeal.price);
 
     const lines = [
-      `Habari, nataka order ${orderId}`,
+      `Habari, nataka order ${v.orderId}`,
       `Deal: ${currentDeal.title}`,
       `Bei: Ksh ${currentDeal.price}`,
-      `Nambari ya kupokea: ${phone}`,
+      `Nambari ya kupokea: ${v.phone}`,
     ];
-    if (name) lines.push(`Jina: ${name}`);
+    if (v.name) lines.push(`Jina: ${v.name}`);
     lines.push(`Nitalipa till ${C.till} kisha nitapeleka M-Pesa SMS.`);
-    lines.push(`Tafadhali deliver kwa ${phone} baada ya confirmation.`);
+    lines.push(`Tafadhali deliver kwa ${v.phone} baada ya confirmation.`);
 
-    const text = lines.join("\n");
-    const url = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(text)}`;
-
-    orderPreview.innerHTML = `<strong>Order ID: ${orderId}</strong><br>Delivery to: ${phone}<br>Amount: Ksh ${currentDeal.price}`;
-    orderPreview.style.display = "block";
-
-    // Small delay so user can see Order ID, then open WA
+    const url = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
     setTimeout(() => {
       window.open(url, "_blank", "noopener");
       closeModal();
-      showToast("Order " + orderId + " ready — send M-Pesa SMS after paying");
-    }, 600);
+      showToast("Order " + v.orderId + " — pay till then send M-Pesa SMS");
+    }, 400);
   });
+
+  // STK Push path
+  if (btnStk) {
+    btnStk.addEventListener("click", async () => {
+      const v = validate();
+      if (!v) return;
+      lastOrderId = v.orderId;
+      showPreview(v.orderId, v.phone, currentDeal.price);
+
+      btnStk.disabled = true;
+      btnWa.disabled = true;
+      if (stkStatus) {
+        stkStatus.style.display = "block";
+        stkStatus.textContent = "Sending M-Pesa prompt to your phone…";
+        stkStatus.className = "stk-status";
+      }
+
+      try {
+        const res = await fetch("/api/mpesa/stk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: v.phone,
+            amount: currentDeal.price,
+            orderId: v.orderId,
+            dealTitle: currentDeal.title,
+            deliveryPhone: v.phone,
+          }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          if (stkStatus) {
+            stkStatus.textContent =
+              "Prompt sent! Enter your M-Pesa PIN on your phone. Order: " + v.orderId;
+            stkStatus.className = "stk-status ok";
+          }
+          showToast("Check your phone — enter M-Pesa PIN");
+          // Keep modal open a bit so they see Order ID
+          setTimeout(() => {
+            closeModal();
+          }, 3500);
+        } else {
+          if (stkStatus) {
+            stkStatus.textContent =
+              (data.error || "STK failed") +
+              " — you can still pay via Till + WhatsApp";
+            stkStatus.className = "stk-status err";
+          }
+          btnStk.disabled = false;
+          btnWa.disabled = false;
+        }
+      } catch (e) {
+        if (stkStatus) {
+          stkStatus.textContent =
+            "Could not reach payment API. Use Till + WhatsApp instead.";
+          stkStatus.className = "stk-status err";
+        }
+        btnStk.disabled = false;
+        btnWa.disabled = false;
+      }
+    });
+  }
 
   function render(list, mountId) {
     const root = document.getElementById(mountId);
@@ -157,6 +240,16 @@
     const t = document.getElementById("toast");
     t.textContent = msg;
     t.style.display = "block";
-    setTimeout(() => (t.style.display = "none"), 2800);
+    setTimeout(() => (t.style.display = "none"), 3200);
   }
+
+  // Optional: show if STK is configured
+  fetch("/api/mpesa/status")
+    .then((r) => r.json())
+    .then((d) => {
+      if (d && d.mpesaConfigured && btnStk) {
+        btnStk.style.display = "inline-flex";
+      }
+    })
+    .catch(() => {});
 })();
