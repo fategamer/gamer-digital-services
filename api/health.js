@@ -1,4 +1,4 @@
-const { hasUpstash } = require("./_lib/store");
+const { storageMode, hasUpstash, hasGitHub } = require("./_lib/store");
 
 module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -10,6 +10,8 @@ module.exports = async function handler(req, res) {
       mpesa: !!(process.env.MPESA_CONSUMER_KEY && process.env.MPESA_PASSKEY),
       telegram: !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
       redis: hasUpstash(),
+      githubStore: hasGitHub(),
+      storage: storageMode(),
       time: new Date().toISOString(),
     })
   );

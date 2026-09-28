@@ -1,13 +1,10 @@
-/**
- * POST /api/orders/create
- */
 const {
   saveOrder,
   notifyTelegram,
   makeOrderId,
   normalizePhone,
   isValidKenyaPhone,
-  hasUpstash,
+  storageMode,
 } = require("../_lib/store");
 
 function json(res, status, body) {
@@ -43,17 +40,11 @@ module.exports = async function handler(req, res) {
   const gift = !!body.gift;
   const okoa = !!body.okoa;
 
-  if (!isValidKenyaPhone(phone)) {
-    return json(res, 400, { error: "Invalid delivery phone" });
-  }
-  if (!amount || amount < 1) {
-    return json(res, 400, { error: "Invalid amount" });
-  }
+  if (!isValidKenyaPhone(phone)) return json(res, 400, { error: "Invalid delivery phone" });
+  if (!amount || amount < 1) return json(res, 400, { error: "Invalid amount" });
 
   const orderId =
-    body.orderId && /^GDS-[A-Z0-9]{4}$/.test(body.orderId)
-      ? body.orderId
-      : makeOrderId();
+    body.orderId && /^GDS-[A-Z0-9]{4}$/.test(body.orderId) ? body.orderId : makeOrderId();
 
   const order = {
     orderId,
@@ -101,6 +92,6 @@ module.exports = async function handler(req, res) {
     orderId,
     order,
     till: process.env.PUBLIC_TILL || "6872649",
-    persistence: hasUpstash() ? "redis" : "memory",
+    persistence: storageMode(),
   });
 };

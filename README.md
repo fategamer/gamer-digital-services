@@ -1,36 +1,42 @@
-# Gamer Digital Services — real backend
+# Gamer Digital Services
 
 **Live:** https://gamer-digital-services.vercel.app/
 
-## How it works (production flow)
+## Interactive features (all working in UI)
 
-1. Customer clicks **Buy** → enters delivery phone  
-2. Frontend calls **`POST /api/orders/create`** → server order + **Telegram** alert  
-3. Customer pays via **Till + WhatsApp** or **STK** (if Daraja configured)  
-4. STK success → **`/api/mpesa/callback`** marks order **paid** + Telegram  
-5. You open **`/agent.html`** → mark **delivered** after you send the bundle  
+| Feature | How to use |
+|---------|------------|
+| **Okoa filter** | Hero “Okoa-friendly” or **Okoa only** chip → filters data deals |
+| **Gift a friend** | **Gift** on a deal, or Myself/Gift toggle in modal |
+| **Referral** | Type code → Apply, or open `?ref=CODE` |
+| **Tabs** | Data / Minutes / SMS / Tunukiwa / Airtel / FAQ |
+| **Share** | Opens WhatsApp with deal + till + ref link |
+| **Buy** | Creates **server order**, then Till+WhatsApp or STK |
+| **Agent** | `/agent.html` PIN `6872` → list / mark paid / delivered |
 
-## API
+## Make orders persist (pick one)
 
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/health` | mpesa / telegram / redis status |
-| `POST /api/orders/create` | create order |
-| `GET /api/orders/list?pin=` | agent list |
-| `POST /api/orders/update` | paid / delivered / cancelled |
-| `POST /api/mpesa/stk` | STK Push |
-| `POST /api/mpesa/callback` | Safaricom callback |
+### Option A — GitHub file store (simple)
+Vercel → Environment Variables:
+```
+GITHUB_TOKEN=ghp_xxxx   # classic token with repo contents:write on this repo
+AGENT_PIN=6872
+```
+Orders saved to `data/orders.json` in this repo.
 
-## Vercel environment variables
+### Option B — Upstash Redis
+```
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+```
 
-### Required for “live ops” (recommended)
+### Telegram alerts
 ```
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
-AGENT_PIN=6872
 ```
 
-### STK Push (optional but powerful)
+### STK (Daraja)
 ```
 MPESA_CONSUMER_KEY=
 MPESA_CONSUMER_SECRET=
@@ -40,21 +46,13 @@ MPESA_ENV=sandbox
 MPESA_TRANSACTION_TYPE=CustomerBuyGoodsOnline
 ```
 
-### Permanent order history (recommended)
-Create free Upstash Redis → Vercel storage integration, or set:
-```
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
-```
-Without Redis, orders live in server memory (work while the function is warm; Telegram is still the source of truth).
+Redeploy after setting env vars.
 
-## Agent
+## API
 
-https://gamer-digital-services.vercel.app/agent.html  
-Default PIN: `6872` (override with `AGENT_PIN` or `config.js` agentPin for UI only — API uses env).
-
-## Honest limit
-
-Backend confirms **orders + payments**.  
-**Delivering** Safaricom/Airtel bundles still requires your float / manual USSD / aggregator API.  
-When you connect a top-up API later, hook it into `status: paid` → auto-deliver.
+- `GET /api/health`
+- `POST /api/orders/create`
+- `GET /api/orders/list?pin=`
+- `POST /api/orders/update`
+- `POST /api/mpesa/stk`
+- `POST /api/mpesa/callback`
