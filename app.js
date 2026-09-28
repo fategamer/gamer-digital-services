@@ -2,7 +2,6 @@
   const C = window.BINGWA;
   if (!C) return;
 
-  // Referral from URL ?ref=CODE
   const params = new URLSearchParams(location.search);
   let refCode = (params.get("ref") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
   if (refCode) {
@@ -58,13 +57,6 @@
     });
   });
 
-  function makeOrderId() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let id = "GDS-";
-    for (let i = 0; i < 4; i++) id += chars[Math.floor(Math.random() * chars.length)];
-    return id;
-  }
-
   function normalizePhone(raw) {
     let p = String(raw || "").replace(/\D/g, "");
     if (p.startsWith("254") && p.length === 12) p = "0" + p.slice(3);
@@ -74,14 +66,6 @@
 
   function isValidKenyaPhone(p) {
     return /^0[17]\d{8}$/.test(p);
-  }
-
-  function saveLocalOrder(o) {
-    try {
-      const list = JSON.parse(localStorage.getItem("gds_orders") || "[]");
-      list.unshift(o);
-      localStorage.setItem("gds_orders", JSON.stringify(list.slice(0, 100)));
-    } catch (e) {}
   }
 
   function shareDeal(item) {
@@ -100,8 +84,26 @@
     }
   }
 
+  async function createServerOrder(deal, phone, name, payMethod) {
+    const res = await fetch("/api/orders/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        amount: deal.price,
+        title: deal.title,
+        name,
+        ref: refCode || "",
+        network: deal.network || "Safaricom",
+        payMethod,
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "Could not create order");
+    return data;
+  }
+
   let currentDeal = null;
-  let lastOrderId = null;
   const modal = document.getElementById("orderModal");
   const phoneInput = document.getElementById("phoneInput");
   const nameInput = document.getElementById("nameInput");
@@ -115,7 +117,6 @@
 
   function openModal(item) {
     currentDeal = item;
-    lastOrderId = null;
     modalTitle.textContent = item.title;
     modalSub.textContent =
       `Ksh ${item.price}` +
@@ -149,7 +150,7 @@
     if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
   });
 
-  function validate() {
+  function validatePhone() {
     if (!currentDeal) return null;
     const phone = normalizePhone(phoneInput.value);
     if (!isValidKenyaPhone(phone)) {
@@ -161,93 +162,101 @@
     return {
       phone,
       name: (nameInput.value || "").trim(),
-      orderId: lastOrderId || makeOrderId(),
-      ref: refCode || "",
     };
   }
 
   function showPreview(orderId, phone, amount, ref) {
-    lastOrderId = orderId;
     orderPreview.innerHTML =
       `<strong>Order ID: ${orderId}</strong><br>Delivery to: ${phone}<br>Amount: Ksh ${amount}` +
       (ref ? `<br>Ref: ${ref}` : "");
     orderPreview.style.display = "block";
   }
 
-  btnWa.addEventListener("click", () => {
-    const v = validate();
+  btnWa.addEventListener("click", async () => {
+    const v = validatePhone();
     if (!v) return;
-    showPreview(v.orderId, v.phone, currentDeal.price, v.ref);
-    saveLocalOrder({
-      orderId: v.orderId,
-      title: currentDeal.title,
-      phone: v.phone,
-      price: currentDeal.price,
-      ref: v.ref,
-      at: new Date().toISOString(),
-    });
-    const lines = [
-      `Habari, nataka order ${v.orderId}`,
-      `Deal: ${currentDeal.title}`,
-      `Bei: Ksh ${currentDeal.price}`,
-      `Nambari ya kupokea: ${v.phone}`,
-    ];
-    if (v.name) lines.push(`Jina: ${v.name}`);
-    if (v.ref) lines.push(`Ref: ${v.ref}`);
-    lines.push(`Nitalipa till ${C.till} kisha nitapeleka M-Pesa SMS.`);
-    lines.push(`Deliver kwa ${v.phone} baada ya confirmation.`);
-    const url = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
-    setTimeout(() => {
-      window.open(url, "_blank", "noopener");
-      closeModal();
-      showToast("Order " + v.orderId + " — pay till, then send SMS");
-    }, 350);
+    btnWa.disabled = true;
+    if (btnStk) btnStk.disabled = true;
+    if (stkStatus) {
+      stkStatus.style.display = "block";
+      stkStatus.textContent = "Creating order on server…";
+      stkStatus.className = "stk-status";
+    }
+    try {
+      const data = await createServerOrder(currentDeal, v.phone, v.name, "till_whatsapp");
+      const orderId = data.orderId;
+      showPreview(orderId, v.phone, currentDeal.price, refCode);
+      if (stkStatus) {
+        stkStatus.textContent = "Order saved · opening WhatsApp…";
+        stkStatus.className = "stk-status ok";
+      }
+
+      const lines = [
+        `Habari, nataka order ${orderId}`,
+        `Deal: ${currentDeal.title}`,
+        `Bei: Ksh ${currentDeal.price}`,
+        `Nambari ya kupokea: ${v.phone}`,
+      ];
+      if (v.name) lines.push(`Jina: ${v.name}`);
+      if (refCode) lines.push(`Ref: ${refCode}`);
+      lines.push(`Nitalipa till ${C.till} kisha nitapeleka M-Pesa SMS.`);
+      lines.push(`Deliver kwa ${v.phone} baada ya confirmation.`);
+
+      const url = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
+      setTimeout(() => {
+        window.open(url, "_blank", "noopener");
+        closeModal();
+        showToast("Order " + orderId + " created — pay till then send SMS");
+      }, 400);
+    } catch (e) {
+      if (stkStatus) {
+        stkStatus.textContent = e.message || "Server error — try again";
+        stkStatus.className = "stk-status err";
+      }
+      btnWa.disabled = false;
+      if (btnStk) btnStk.disabled = false;
+    }
   });
 
   if (btnStk) {
     btnStk.addEventListener("click", async () => {
-      const v = validate();
+      const v = validatePhone();
       if (!v) return;
-      showPreview(v.orderId, v.phone, currentDeal.price, v.ref);
-      saveLocalOrder({
-        orderId: v.orderId,
-        title: currentDeal.title,
-        phone: v.phone,
-        price: currentDeal.price,
-        ref: v.ref,
-        at: new Date().toISOString(),
-      });
       btnStk.disabled = true;
       btnWa.disabled = true;
       if (stkStatus) {
         stkStatus.style.display = "block";
-        stkStatus.textContent = "Sending M-Pesa prompt…";
+        stkStatus.textContent = "Creating order + STK…";
         stkStatus.className = "stk-status";
       }
       try {
+        const data = await createServerOrder(currentDeal, v.phone, v.name, "stk");
+        const orderId = data.orderId;
+        showPreview(orderId, v.phone, currentDeal.price, refCode);
+
         const res = await fetch("/api/mpesa/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phone: v.phone,
             amount: currentDeal.price,
-            orderId: v.orderId,
+            orderId,
             dealTitle: currentDeal.title,
             deliveryPhone: v.phone,
-            ref: v.ref,
           }),
         });
-        const data = await res.json();
-        if (data.ok) {
+        const stk = await res.json();
+        if (stk.ok) {
           if (stkStatus) {
-            stkStatus.textContent = "Prompt sent! Enter PIN. Order: " + v.orderId;
+            stkStatus.textContent = "Prompt sent! Enter PIN. Order: " + orderId;
             stkStatus.className = "stk-status ok";
           }
           showToast("Check phone — enter M-Pesa PIN");
           setTimeout(closeModal, 3200);
         } else {
           if (stkStatus) {
-            stkStatus.textContent = (data.error || "STK unavailable") + " — use Till + WhatsApp";
+            stkStatus.textContent =
+              (stk.error || "STK failed") + " — use Till + WhatsApp (order already created: " + orderId + ")";
             stkStatus.className = "stk-status err";
           }
           btnStk.disabled = false;
@@ -255,7 +264,7 @@
         }
       } catch (e) {
         if (stkStatus) {
-          stkStatus.textContent = "API offline — use Till + WhatsApp";
+          stkStatus.textContent = e.message || "Error — try Till + WhatsApp";
           stkStatus.className = "stk-status err";
         }
         btnStk.disabled = false;
@@ -325,10 +334,10 @@
     setTimeout(() => (t.style.display = "none"), 3000);
   }
 
-  fetch("/api/mpesa/status")
+  fetch("/api/health")
     .then((r) => r.json())
     .then((d) => {
-      if (d && d.mpesaConfigured && btnStk) btnStk.style.display = "inline-flex";
+      if (d && d.mpesa && btnStk) btnStk.style.display = "inline-flex";
     })
     .catch(() => {});
 })();

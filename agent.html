@@ -6,112 +6,159 @@
   <title>Agent Dashboard — Gamer Digital Services</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root { --green: #00a651; --ink: #102217; --muted: #4b5c52; --line: #d7eadf; }
+    :root { --green: #00a651; --ink: #102217; --muted: #4b5c52; --line: #d7eadf; --red: #e10600; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Inter, system-ui, sans-serif; background: #f4faf6; color: var(--ink); padding: 20px; }
-    .box { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
-    h1 { font-size: 20px; margin-bottom: 6px; }
-    p, li { font-size: 14px; color: var(--muted); line-height: 1.5; }
-    label { display: block; font-weight: 700; font-size: 13px; margin: 12px 0 4px; }
-    input, select {
-      width: 100%; padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-size: 15px;
+    body { font-family: Inter, system-ui, sans-serif; background: #f4faf6; color: var(--ink); padding: 16px; }
+    .box { max-width: 900px; margin: 0 auto 16px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    h1 { font-size: 18px; margin-bottom: 6px; }
+    p, li { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    label { display: block; font-weight: 700; font-size: 12px; margin: 10px 0 4px; }
+    input {
+      width: 100%; max-width: 320px; padding: 10px 12px; border: 2px solid var(--line);
+      border-radius: 10px; font-size: 15px;
     }
-    button {
-      margin-top: 12px; background: var(--green); color: #fff; border: 0; border-radius: 999px;
-      padding: 11px 18px; font-weight: 800; cursor: pointer; font-size: 14px;
+    button, .btn {
+      margin-top: 10px; margin-right: 6px; background: var(--green); color: #fff; border: 0;
+      border-radius: 999px; padding: 9px 14px; font-weight: 800; cursor: pointer; font-size: 12px;
+      display: inline-block; text-decoration: none;
     }
+    button.secondary { background: var(--ink); }
+    button.warn { background: #b45309; }
     .hidden { display: none; }
-    .ref-box {
-      background: #e8f8ef; border-radius: 12px; padding: 12px; margin-top: 12px; word-break: break-all;
+    .ref-box { background: #e8f8ef; border-radius: 12px; padding: 12px; margin-top: 12px; word-break: break-all; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+    th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .err { color: var(--red); font-weight: 700; font-size: 13px; margin-top: 8px; }
+    .ok { color: var(--green); font-weight: 700; font-size: 13px; margin-top: 8px; }
+    .badge {
+      display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 800;
+      background: #eef6f1; color: #007a3d;
     }
-    .ref-box strong { color: var(--green); }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
-    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
-    .err { color: #e10600; font-weight: 700; font-size: 13px; margin-top: 8px; }
+    .badge.paid { background: #dcfce7; }
+    .badge.delivered { background: #e0e7ff; color: #3730a3; }
+    .badge.pending_payment { background: #fef3c7; color: #92400e; }
     a { color: var(--green); font-weight: 700; }
   </style>
 </head>
 <body>
   <div class="box" id="loginBox">
     <h1>Agent Dashboard</h1>
-    <p>Enter the agent PIN to open tools (referral link, local order log, ops notes).</p>
+    <p>Server orders, mark paid/delivered, referral links. PIN from config / Vercel <code>AGENT_PIN</code>.</p>
     <label for="pin">PIN</label>
     <input id="pin" type="password" inputmode="numeric" placeholder="PIN" />
-    <p class="err hidden" id="pinErr">Wrong PIN</p>
+    <p class="err hidden" id="pinErr">Wrong PIN or API error</p>
     <button type="button" id="loginBtn">Unlock</button>
   </div>
 
-  <div class="box hidden" id="dash">
-    <h1>Agent tools</h1>
-    <p style="margin-bottom:8px"><a href="/">← Back to shop</a></p>
+  <div class="hidden" id="dash">
+    <div class="box">
+      <h1>Live orders (server)</h1>
+      <p><a href="/">← Shop</a> · <button type="button" class="secondary" id="refreshBtn">Refresh</button></p>
+      <p id="listMsg" class="ok"></p>
+      <table>
+        <thead>
+          <tr><th>Order</th><th>Deal / Phone</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="orderRows"></tbody>
+      </table>
+    </div>
 
-    <label for="agentCode">Your referral code</label>
-    <input id="agentCode" placeholder="e.g. JANE01" maxlength="16" />
-    <button type="button" id="makeLink">Generate my link</button>
-    <div class="ref-box hidden" id="refOut"></div>
+    <div class="box">
+      <h1>Referral link</h1>
+      <label for="agentCode">Your code</label>
+      <input id="agentCode" placeholder="e.g. JANE01" maxlength="16" />
+      <button type="button" id="makeLink">Generate</button>
+      <div class="ref-box hidden" id="refOut"></div>
+    </div>
 
-    <h1 style="margin-top:24px;font-size:16px">Recent orders (this device)</h1>
-    <p>Orders started on this browser are stored locally for your reference.</p>
-    <table>
-      <thead><tr><th>Order</th><th>Deal</th><th>Phone</th><th>Ksh</th><th>Ref</th></tr></thead>
-      <tbody id="orderRows"></tbody>
-    </table>
-
-    <h1 style="margin-top:24px;font-size:16px">Ops checklist</h1>
-    <ul style="margin-left:18px">
-      <li>Match WhatsApp / Telegram alerts by <strong>Order ID</strong></li>
-      <li>Deliver to the <strong>delivery phone</strong> in the order</li>
-      <li>Airtel deals → Airtel lines only</li>
-      <li>STK paid alerts need <code>TELEGRAM_BOT_TOKEN</code> + <code>TELEGRAM_CHAT_ID</code> on Vercel</li>
-      <li>Change <code>agentPin</code> in config.js</li>
-    </ul>
+    <div class="box">
+      <h1>Backend checklist</h1>
+      <ul style="margin-left:16px">
+        <li>Every Buy creates a server order + Telegram (if configured)</li>
+        <li>STK paid auto-marks order paid via callback</li>
+        <li>You mark <strong>delivered</strong> after you send the bundle</li>
+        <li>For permanent order history add Upstash Redis env vars</li>
+        <li>Health: <a href="/api/health" target="_blank">/api/health</a></li>
+      </ul>
+    </div>
   </div>
 
   <script src="config.js"></script>
   <script>
     const C = window.BINGWA || {};
-    const pinInput = document.getElementById("pin");
-    document.getElementById("loginBtn").onclick = () => {
-      if (String(pinInput.value) === String(C.agentPin || "6872")) {
+    let pin = "";
+
+    document.getElementById("loginBtn").onclick = async () => {
+      pin = document.getElementById("pin").value;
+      try {
+        const r = await fetch("/api/orders/list?pin=" + encodeURIComponent(pin));
+        const d = await r.json();
+        if (!r.ok || !d.ok) throw new Error(d.error || "Auth failed");
         document.getElementById("loginBox").classList.add("hidden");
         document.getElementById("dash").classList.remove("hidden");
-        loadOrders();
-      } else {
+        renderOrders(d.orders || []);
+        document.getElementById("listMsg").textContent = d.count + " orders loaded";
+      } catch (e) {
         document.getElementById("pinErr").classList.remove("hidden");
       }
     };
 
+    document.getElementById("refreshBtn").onclick = () => loadOrders();
+
+    async function loadOrders() {
+      const r = await fetch("/api/orders/list?pin=" + encodeURIComponent(pin));
+      const d = await r.json();
+      if (d.ok) {
+        renderOrders(d.orders || []);
+        document.getElementById("listMsg").textContent = d.count + " orders · " + new Date().toLocaleTimeString();
+      }
+    }
+
+    function renderOrders(orders) {
+      const tb = document.getElementById("orderRows");
+      tb.innerHTML = "";
+      if (!orders.length) {
+        tb.innerHTML = "<tr><td colspan=4>No orders yet. Place a test order on the shop.</td></tr>";
+        return;
+      }
+      orders.forEach((o) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${o.orderId}</strong><br><small>${(o.createdAt || "").slice(0, 19)}</small></td>
+          <td>${o.title || ""}<br><strong>${o.phone || ""}</strong><br>Ksh ${o.amount}${o.ref ? " · ref " + o.ref : ""}${o.mpesaReceipt ? "<br>Rcpt " + o.mpesaReceipt : ""}</td>
+          <td><span class="badge ${o.status || ""}">${o.status || "?"}</span></td>
+          <td>
+            <button type="button" data-id="${o.orderId}" data-st="paid">Paid</button>
+            <button type="button" data-id="${o.orderId}" data-st="delivered">Delivered</button>
+          </td>`;
+        tb.appendChild(tr);
+      });
+      tb.querySelectorAll("button[data-id]").forEach((btn) => {
+        btn.onclick = () => updateStatus(btn.dataset.id, btn.dataset.st);
+      });
+    }
+
+    async function updateStatus(orderId, status) {
+      const r = await fetch("/api/orders/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin, orderId, status }),
+      });
+      const d = await r.json();
+      if (d.ok) loadOrders();
+      else alert(d.error || "Update failed");
+    }
+
     document.getElementById("makeLink").onclick = () => {
       const code = (document.getElementById("agentCode").value || C.defaultRef || "GDS")
-        .trim()
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "")
-        .slice(0, 16) || "GDS";
+        .trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16) || "GDS";
       const base = (C.siteUrl || location.origin).replace(/\/$/, "");
       const link = base + "/?ref=" + encodeURIComponent(code);
       const out = document.getElementById("refOut");
       out.classList.remove("hidden");
-      out.innerHTML = `<strong>Your link</strong><br>${link}<br><br>Share on WhatsApp Status. Orders will include ref <strong>${code}</strong>.`;
+      out.innerHTML = `<strong>Link</strong><br>${link}`;
       try { navigator.clipboard.writeText(link); } catch (e) {}
     };
-
-    function loadOrders() {
-      let rows = [];
-      try {
-        rows = JSON.parse(localStorage.getItem("gds_orders") || "[]");
-      } catch (e) {}
-      const tb = document.getElementById("orderRows");
-      tb.innerHTML = "";
-      if (!rows.length) {
-        tb.innerHTML = "<tr><td colspan=5>No local orders yet</td></tr>";
-        return;
-      }
-      rows.slice(0, 50).forEach((o) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${o.orderId || ""}</td><td>${o.title || ""}</td><td>${o.phone || ""}</td><td>${o.price || ""}</td><td>${o.ref || "—"}</td>`;
-        tb.appendChild(tr);
-      });
-    }
   </script>
 </body>
 </html>

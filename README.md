@@ -1,20 +1,36 @@
-# Gamer Digital Services
+# Gamer Digital Services — real backend
 
-Live: https://gamer-digital-services.vercel.app/
+**Live:** https://gamer-digital-services.vercel.app/
 
-## Features
+## How it works (production flow)
 
-- Safaricom data / minutes / SMS / Tunukiwa
-- **Airtel** deals tab
-- Gift any number + Order ID
-- STK Push + Till + WhatsApp
-- **Referral codes** (`?ref=CODE`)
-- **Agent dashboard** at `/agent.html` (PIN in `config.js` → `agentPin`)
-- **Telegram** alerts on paid STK (env vars)
+1. Customer clicks **Buy** → enters delivery phone  
+2. Frontend calls **`POST /api/orders/create`** → server order + **Telegram** alert  
+3. Customer pays via **Till + WhatsApp** or **STK** (if Daraja configured)  
+4. STK success → **`/api/mpesa/callback`** marks order **paid** + Telegram  
+5. You open **`/agent.html`** → mark **delivered** after you send the bundle  
 
-## Env vars (Vercel)
+## API
 
-### Daraja STK
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/health` | mpesa / telegram / redis status |
+| `POST /api/orders/create` | create order |
+| `GET /api/orders/list?pin=` | agent list |
+| `POST /api/orders/update` | paid / delivered / cancelled |
+| `POST /api/mpesa/stk` | STK Push |
+| `POST /api/mpesa/callback` | Safaricom callback |
+
+## Vercel environment variables
+
+### Required for “live ops” (recommended)
+```
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+AGENT_PIN=6872
+```
+
+### STK Push (optional but powerful)
 ```
 MPESA_CONSUMER_KEY=
 MPESA_CONSUMER_SECRET=
@@ -24,23 +40,21 @@ MPESA_ENV=sandbox
 MPESA_TRANSACTION_TYPE=CustomerBuyGoodsOnline
 ```
 
-### Telegram paid alerts
-1. Message @BotFather → create bot → copy token
-2. Message your bot, then get chat id (e.g. via @userinfobot or getUpdates)
-3. Add on Vercel:
+### Permanent order history (recommended)
+Create free Upstash Redis → Vercel storage integration, or set:
 ```
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
+Without Redis, orders live in server memory (work while the function is warm; Telegram is still the source of truth).
 
-Redeploy after saving.
+## Agent
 
-## Agent referrals
+https://gamer-digital-services.vercel.app/agent.html  
+Default PIN: `6872` (override with `AGENT_PIN` or `config.js` agentPin for UI only — API uses env).
 
-Share: `https://gamer-digital-services.vercel.app/?ref=JANE01`
+## Honest limit
 
-Orders include `Ref: JANE01` in WhatsApp message. Generate links in `/agent.html`.
-
-## Edit deals
-
-`config.js` only. Change `agentPin` from default `6872`.
+Backend confirms **orders + payments**.  
+**Delivering** Safaricom/Airtel bundles still requires your float / manual USSD / aggregator API.  
+When you connect a top-up API later, hook it into `status: paid` → auto-deliver.
