@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Gamer Digital Services — Till pay · Gift Accept/Decline</title>
+  <title>Gamer Digital Services — SMS gift prompt · Till</title>
   <meta name="theme-color" content="#00a651" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -47,7 +47,6 @@
       background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.45);
       padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #fff; min-height: 44px;
     }
-    .pill.on { background: #fff; color: var(--green-dark); }
     .ref-banner {
       display: none; background: #fef3c7; color: #92400e; font-weight: 800; text-align: center;
       padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 2px solid #f59e0b;
@@ -167,8 +166,12 @@
     .success-box .oid {
       font-size: 22px; font-weight: 900; color: var(--green-dark); letter-spacing: 1px; margin: 6px 0;
     }
-    .success-box .payline { font-size: 14px; font-weight: 700; margin: 8px 0; }
+    .success-box .payline { font-size: 15px; font-weight: 800; margin: 8px 0; color: var(--green-dark); }
     .success-box .mini { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    #promptStatus {
+      display: none; margin-top: 10px; padding: 10px; background: #fff; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--ink); text-align: left;
+    }
     .gift-link-box {
       display: none; margin-top: 12px; background: #fff; border: 2px dashed var(--green);
       border-radius: 12px; padding: 12px; text-align: left; word-break: break-all;
@@ -196,12 +199,11 @@
 </head>
 <body>
   <div id="bootError" class="wrap"></div>
-
   <header>
     <div class="wrap nav">
       <div class="brand">
         <div class="mark">G</div>
-        <div>GAMER DIGITAL<small>Till · Gift Accept/Decline</small></div>
+        <div>GAMER DIGITAL<small>SMS prompt to number · Till</small></div>
       </div>
       <div class="nav-actions">
         <a class="btn btn-outline" href="agent.html">Agent</a>
@@ -209,11 +211,10 @@
       </div>
     </div>
   </header>
-
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Gift: friend Accepts or Declines on a link. You pay till. WhatsApp optional.</p>
+      <p id="heroSub">Gift: SMS goes to their number → Accept/Decline. You pay till.</p>
       <div class="pills">
         <button type="button" class="pill" id="pillOkoa">Okoa</button>
         <button type="button" class="pill" id="pillGift">Gift</button>
@@ -222,19 +223,18 @@
       </div>
     </div>
   </section>
-
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
     <div class="how">
-      <h2>Gift a friend (Accept / Decline)</h2>
+      <h2>Gift = prompt appears on their phone</h2>
       <ol>
-        <li>Tap <b>Gift</b> → enter friend's number</li>
-        <li>Create order → get a <b>gift link</b></li>
-        <li>Send the link any way (SMS, Telegram, call, etc.)</li>
-        <li>Friend opens link → <b>Accept</b> or <b>Decline</b></li>
-        <li>If Accept → you pay till <b id="tillHow">6872649</b> → we deliver</li>
+        <li>Tap <b>Gift</b> → type <b>their number</b></li>
+        <li>Tap <b>Send prompt to this number</b></li>
+        <li>They get an <b>SMS</b> with Accept / Decline</li>
+        <li>They Accept → you pay till <b id="tillHow">6872649</b></li>
+        <li>We deliver to that number</li>
       </ol>
-      <p class="note-soft">No WhatsApp required. Link is enough for the friend to respond.</p>
+      <p class="note-soft">Add Africa's Talking SMS keys on Vercel so the text goes to their phone. Until then, gift link still shows as backup.</p>
     </div>
     <div class="tools">
       <div class="tool-card" id="refTool">
@@ -252,7 +252,6 @@
       </div>
     </div>
   </div>
-
   <main class="wrap grid" id="deals">
     <div>
       <div class="tabs">
@@ -269,7 +268,7 @@
       </div>
       <article class="card panel active" id="panel-data">
         <h2>Data</h2>
-        <p class="section-note" id="dataNote">Buy or Gift (Accept/Decline link)</p>
+        <p class="section-note" id="dataNote">Buy or Gift (SMS to their phone)</p>
         <div id="dataDeals"></div>
       </article>
       <article class="card panel" id="panel-minutes"><h2>Minutes</h2><div id="minuteDeals"></div></article>
@@ -285,9 +284,9 @@
         <div class="till" id="tillDigits"></div>
         <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till</button>
         <ol class="steps">
-          <li>Create order / gift on site</li>
-          <li>Friend Accepts (if gift)</li>
-          <li>Pay till <b id="tillText"></b></li>
+          <li>Gift → SMS to their number</li>
+          <li>They Accept</li>
+          <li>You pay till <b id="tillText"></b></li>
           <li>Keep Order ID</li>
         </ol>
       </div>
@@ -301,7 +300,6 @@
       </div>
     </aside>
   </main>
-
   <footer>
     <div class="wrap foot">
       <div>Gamer Digital Services</div>
@@ -309,12 +307,10 @@
     </div>
   </footer>
   <div class="toast" id="toast">OK</div>
-
   <div class="modal-backdrop" id="orderModal">
     <div class="modal" onclick="event.stopPropagation()">
       <h3 id="modalTitle">Order</h3>
       <p class="sub" id="modalSub"></p>
-
       <div id="formStep">
         <label>Who receives?</label>
         <div class="seg">
@@ -325,39 +321,38 @@
         <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" />
         <p class="hint" id="phoneHint">Delivery number</p>
         <p class="error" id="phoneError">Invalid number</p>
-        <label for="nameInput">Your name (shown on gift)</label>
+        <label for="nameInput">Your name (on SMS)</label>
         <input id="nameInput" type="text" maxlength="40" placeholder="e.g. Jane" />
         <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">Okoa OK</div>
         <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-size:13px;font-weight:700;color:#92400e"></div>
         <div class="stk-status" id="stkStatus"></div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-green" id="modalConfirm">Create order / gift invite</button>
-          <button type="button" class="btn btn-outline" id="modalStk" style="display:none">STK (optional)</button>
+          <button type="button" class="btn btn-green" id="modalConfirm">Create order &amp; show till</button>
+          <button type="button" class="btn btn-outline" id="modalStk" style="display:none">STK</button>
           <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
         </div>
       </div>
-
       <div class="success-box" id="successBox">
         <div style="font-weight:800;color:var(--green-dark)">Ready</div>
         <div class="oid" id="successOid">GDS-XXXX</div>
         <div class="payline" id="successPay"></div>
         <div class="mini" id="successPhone"></div>
+        <div id="promptStatus"></div>
         <div class="gift-link-box" id="giftLinkBlock">
-          <div class="lbl">Friend opens this → Accept or Decline</div>
+          <div class="lbl">Backup link (if SMS delayed)</div>
           <code id="giftLinkText"></code>
         </div>
         <div class="mini" id="successTillHint"></div>
         <div class="modal-actions" style="margin-top:12px">
-          <button type="button" class="btn btn-green" id="copyGiftLinkBtn">Copy gift link for friend</button>
-          <button type="button" class="btn btn-dark" id="copyOrderBtn">Copy full message</button>
+          <button type="button" class="btn btn-green" id="copyGiftLinkBtn">Copy gift link</button>
+          <button type="button" class="btn btn-dark" id="copyOrderBtn">Copy message</button>
           <button type="button" class="btn btn-outline" id="doneBtn">Done</button>
           <a class="btn btn-wa" id="helpAfter" target="_blank" rel="noopener" style="display:none">Optional help</a>
         </div>
       </div>
     </div>
   </div>
-
-  <script src="config.js?v=gift2"></script>
-  <script src="app.js?v=gift2"></script>
+  <script src="config.js?v=sms1"></script>
+  <script src="app.js?v=sms1"></script>
 </body>
 </html>
