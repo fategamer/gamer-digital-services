@@ -1,4 +1,4 @@
-/* Gamer Digital Services — gift prompt goes TO friend */
+/* Till-first shop — WhatsApp optional */
 (function () {
   function showBoot(msg) {
     var el = document.getElementById("bootError");
@@ -10,7 +10,7 @@
 
   var C = window.BINGWA;
   if (!C) {
-    showBoot("Config failed. Open https://gamer-digital-services.vercel.app/?v=gift1");
+    showBoot("Config failed. Open https://gamer-digital-services.vercel.app/?v=till1");
     return;
   }
 
@@ -27,7 +27,7 @@
     t.style.display = "block";
     setTimeout(function () {
       t.style.display = "none";
-    }, 3000);
+    }, 2800);
   }
 
   function normalizePhone(raw) {
@@ -38,74 +38,8 @@
   function isValidKenyaPhone(p) {
     return /^0[17]\d{8}$/.test(p);
   }
-  /** Open WhatsApp chat WITH that person (not the shop) */
-  function openWhatsAppTo(phone07, text) {
-    var p = normalizePhone(phone07);
-    if (!isValidKenyaPhone(p)) {
-      toast("Enter a valid friend number 07…");
-      return false;
-    }
-    var intl = "254" + p.slice(1);
-    var url = "https://wa.me/" + intl + "?text=" + encodeURIComponent(text);
-    window.open(url, "_blank", "noopener");
-    return true;
-  }
-  function openWhatsAppShop(text) {
-    var url =
-      "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(text);
-    window.open(url, "_blank", "noopener");
-  }
 
-  /** Text the FRIEND sees on their WhatsApp */
-  function giftMessageForFriend(opts) {
-    var from = (opts.yourName || "").trim();
-    var lines = ["Habari 👋", ""];
-    if (from) {
-      lines.push("*" + from + "* amekutumia gift ya data 🎁");
-    } else {
-      lines.push("Umetumiwa gift ya data 🎁");
-    }
-    lines.push("kupitia *Gamer Digital Services*.");
-    lines.push("");
-    if (opts.dealTitle) {
-      lines.push("📦 *" + opts.dealTitle + "*");
-      if (opts.price) lines.push("💰 Ksh " + opts.price);
-      lines.push("");
-    }
-    if (opts.orderId) {
-      lines.push("🧾 Order: " + opts.orderId);
-      lines.push("");
-    }
-    if (opts.note) {
-      lines.push("💬 " + opts.note);
-      lines.push("");
-    }
-    lines.push("Bundle itawekwa kwenye nambari yako baada ya payment confirmation.");
-    lines.push("");
-    lines.push("Asante! 💚");
-    return lines.join("\n");
-  }
-
-  function shopOrderText(opts) {
-    var lines = [
-      "*NEW ORDER* " + opts.orderId,
-      "────────────",
-      opts.gift ? "Type: GIFT (prompt friend)" : "Type: SELF",
-      "Deliver to: " + opts.phone,
-      "Deal: " + opts.title,
-      "Amount: Ksh " + opts.price,
-      "Till: " + C.till,
-    ];
-    if (opts.name) lines.push((opts.gift ? "From/Name: " : "Customer: ") + opts.name);
-    if (opts.okoa) lines.push("Okoa: yes");
-    if (opts.ref) lines.push("Ref: " + opts.ref);
-    lines.push("────────────");
-    lines.push("Nitalipa till " + C.till + " kisha nitatuma M-Pesa SMS.");
-    lines.push("Deliver kwa " + opts.phone + " baada ya confirmation.");
-    return lines.join("\n");
-  }
-
-  // Referral
+  // Referral (optional)
   var params = new URLSearchParams(location.search);
   var refCode = (params.get("ref") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
   try {
@@ -133,14 +67,14 @@
     var pill = $("pillRef");
     if (refCode) {
       if (banner) {
-        banner.textContent = "✓ Referral active: " + refCode;
+        banner.textContent = "Referral: " + refCode;
         banner.classList.add("show");
       }
       if (status) status.textContent = "Active: " + refCode;
       if (input && document.activeElement !== input) input.value = refCode;
       if (refNote) {
         refNote.style.display = "block";
-        refNote.textContent = "Referral: " + refCode;
+        refNote.textContent = "Ref: " + refCode;
       }
       if (pill) pill.classList.add("on");
     } else {
@@ -148,7 +82,7 @@
         banner.classList.remove("show");
         banner.textContent = "";
       }
-      if (status) status.textContent = "No code yet";
+      if (status) status.textContent = "No code";
       if (input && document.activeElement !== input) input.value = "";
       if (refNote) refNote.style.display = "none";
       if (pill) pill.classList.remove("on");
@@ -158,9 +92,9 @@
 
   on($("applyRef"), "click", function () {
     var v = ($("refInput") && $("refInput").value) || "";
-    if (!v.trim()) return toast("Enter referral code");
+    if (!v.trim()) return toast("Enter code");
     setRef(v);
-    toast("Referral " + refCode + " applied");
+    toast("Referral applied");
   });
   on($("clearRef"), "click", function () {
     setRef("");
@@ -168,10 +102,6 @@
   });
   on($("pillRef"), "click", function () {
     if ($("refTool")) $("refTool").scrollIntoView({ behavior: "smooth" });
-  });
-  on($("pillPrompt"), "click", function () {
-    if ($("promptCard")) $("promptCard").scrollIntoView({ behavior: "smooth" });
-    if ($("promptPhone")) $("promptPhone").focus();
   });
 
   var okoaOnly = false;
@@ -181,6 +111,8 @@
       el.classList.toggle("on", el.dataset.filter === (okoaOnly ? "okoa" : "all"));
     });
     if ($("pillOkoa")) $("pillOkoa").classList.toggle("on", okoaOnly);
+    if ($("dataNote"))
+      $("dataNote").textContent = okoaOnly ? "Okoa-friendly only" : "Buy self or Gift another number";
     renderData();
     switchTab("data");
   }
@@ -212,25 +144,35 @@
     switchTab("airtel");
   });
 
-  var waShop =
-    "https://wa.me/" +
-    C.whatsapp +
-    "?text=" +
-    encodeURIComponent("Habari, niko na swali kuhusu Gamer Digital Services.");
-  ["waTop", "waSide", "waFloat"].forEach(function (id) {
-    if ($(id)) $(id).href = waShop;
+  // Optional help links only
+  var helpText =
+    "Habari, naomba help. Order ID: (weka hapa)";
+  var helpUrl =
+    "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(helpText);
+  ["waTop", "waSide"].forEach(function (id) {
+    if ($(id)) $(id).href = helpUrl;
   });
-  if ($("footPhone")) $("footPhone").textContent = "+" + C.whatsapp;
+
+  if ($("footPhone")) $("footPhone").textContent = "Till " + C.till;
   if ($("tillText")) $("tillText").textContent = C.till;
+  if ($("tillHow")) $("tillHow").textContent = C.till;
   if (C.subtitle && $("heroSub")) $("heroSub").textContent = C.subtitle;
+
   var why = $("whyList");
   if (why) {
-    (C.features || []).forEach(function (f) {
+    var feats = C.features || [
+      "Pay via M-Pesa till",
+      "Gift any number",
+      "Order ID on this site",
+      "WhatsApp only if you need help",
+    ];
+    feats.forEach(function (f) {
       var li = document.createElement("li");
       li.textContent = f;
       why.appendChild(li);
     });
   }
+
   var digits = $("tillDigits");
   if (digits) {
     String(C.till || "").split("").forEach(function (d) {
@@ -241,92 +183,13 @@
     });
   }
 
-  var allDeals = []
-    .concat(C.dataDeals || [])
-    .concat(C.minuteDeals || [])
-    .concat(C.smsDeals || [])
-    .concat(C.tunuDeals || [])
-    .concat(C.airtelDeals || []);
-  var dealIndex = {};
-  allDeals.forEach(function (d) {
-    dealIndex[d.id] = d;
+  on($("copyTill"), "click", function () {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(C.till).then(function () {
+        toast("Till " + C.till + " copied");
+      });
+    } else toast("Till: " + C.till);
   });
-
-  var promptDealSel = $("promptDeal");
-  if (promptDealSel) {
-    allDeals.forEach(function (d) {
-      var opt = document.createElement("option");
-      opt.value = d.id;
-      opt.textContent = d.title + " — Ksh " + d.price;
-      promptDealSel.appendChild(opt);
-    });
-  }
-
-  function currentFriendGiftText() {
-    var dealId = promptDealSel && promptDealSel.value;
-    var deal = dealId ? dealIndex[dealId] : null;
-    return giftMessageForFriend({
-      yourName: ($("promptName") && $("promptName").value) || "",
-      dealTitle: deal ? deal.title : "",
-      price: deal ? deal.price : "",
-      note: ($("promptNote") && $("promptNote").value) || "",
-    });
-  }
-
-  function refreshPromptPreview() {
-    var box = $("promptPreview");
-    if (!box) return;
-    box.textContent = currentFriendGiftText();
-    box.classList.add("show");
-  }
-  ["promptPhone", "promptName", "promptNote"].forEach(function (id) {
-    on($(id), "input", refreshPromptPreview);
-  });
-  on(promptDealSel, "change", refreshPromptPreview);
-
-  /** MAIN: send gift prompt text TO the friend */
-  on($("btnPromptFriend"), "click", function () {
-    var phone = normalizePhone($("promptPhone") && $("promptPhone").value);
-    if (!isValidKenyaPhone(phone)) {
-      toast("Andika nambari ya rafiki (07…)");
-      if ($("promptPhone")) $("promptPhone").focus();
-      return;
-    }
-    var text = currentFriendGiftText();
-    refreshPromptPreview();
-    var ok = openWhatsAppTo(phone, text);
-    if (ok) toast("WhatsApp ya rafiki imefunguliwa — tuma message");
-  });
-
-  on($("btnOrderForFriend"), "click", function () {
-    var phone = normalizePhone($("promptPhone") && $("promptPhone").value);
-    if (!isValidKenyaPhone(phone)) {
-      toast("Andika nambari ya rafiki kwanza");
-      return;
-    }
-    var dealId = promptDealSel && promptDealSel.value;
-    var deal = dealId ? dealIndex[dealId] : (C.dataDeals || [])[0];
-    if (!deal) return toast("No deals");
-    openModal(
-      deal,
-      true,
-      phone,
-      ($("promptName") && $("promptName").value) || ""
-    );
-  });
-
-  function shareDeal(item) {
-    var text =
-      "🔥 " +
-      item.title +
-      " — Ksh " +
-      item.price +
-      "\nGamer Digital Services\nTill " +
-      C.till +
-      "\n" +
-      (C.siteUrl || location.origin);
-    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
-  }
 
   function createServerOrder(deal, phone, name, payMethod, isGift) {
     return fetch("/api/orders/create", {
@@ -339,13 +202,13 @@
         name: name,
         ref: refCode || "",
         network: deal.network || "Safaricom",
-        payMethod: payMethod,
+        payMethod: payMethod || "till",
         gift: !!isGift,
         okoa: !!deal.okOa,
       }),
     }).then(function (res) {
       return res.json().then(function (data) {
-        if (!data.ok) throw new Error(data.error || "Order failed");
+        if (!data.ok) throw new Error(data.error || "Could not create order");
         return data;
       });
     });
@@ -353,16 +216,16 @@
 
   var currentDeal = null;
   var giftMode = false;
-  var lastGift = null;
+  var lastOrder = null;
   var modal = $("orderModal");
   var phoneInput = $("phoneInput");
   var nameInput = $("nameInput");
   var phoneError = $("phoneError");
-  var orderPreview = $("orderPreview");
+  var formStep = $("formStep");
+  var successBox = $("successBox");
   var stkStatus = $("stkStatus");
+  var btnConfirm = $("modalConfirm");
   var btnStk = $("modalStk");
-  var btnWa = $("modalConfirm");
-  var btnNotify = $("modalNotifyFriend");
 
   function setGiftMode(on) {
     giftMode = !!on;
@@ -371,13 +234,12 @@
     if ($("pillGift")) $("pillGift").classList.toggle("on", giftMode);
     if ($("phoneLabel"))
       $("phoneLabel").textContent = giftMode
-        ? "Friend's phone (they receive + get WhatsApp prompt) *"
-        : "Your phone *";
+        ? "Friend's phone (receives deal) *"
+        : "Your phone (receives deal) *";
     if ($("phoneHint"))
       $("phoneHint").textContent = giftMode
-        ? "Prompt text will open on THEIR WhatsApp."
-        : "Bundle on this number.";
-    if (btnNotify) btnNotify.style.display = giftMode ? "inline-flex" : "none";
+        ? "You pay the till · they get the bundle."
+        : "Pay till · bundle loads on this number.";
   }
   on($("modeSelf"), "click", function () {
     setGiftMode(false);
@@ -386,26 +248,26 @@
     setGiftMode(true);
   });
 
-  function openModal(item, forceGift, prefillPhone, prefillName) {
+  function openModal(item, forceGift) {
     currentDeal = item;
-    lastGift = null;
+    lastOrder = null;
     setGiftMode(!!forceGift);
     if ($("modalTitle")) $("modalTitle").textContent = item.title;
     if ($("modalSub"))
       $("modalSub").textContent =
         "Ksh " + item.price + (item.validity ? " · " + item.validity : "");
-    if (phoneInput) phoneInput.value = prefillPhone || "";
-    if (nameInput) nameInput.value = prefillName || "";
+    if (phoneInput) phoneInput.value = "";
+    if (nameInput) nameInput.value = "";
     if (phoneError) phoneError.style.display = "none";
-    if (orderPreview) orderPreview.style.display = "none";
     if (stkStatus) {
       stkStatus.style.display = "none";
       stkStatus.textContent = "";
     }
     if ($("okoaNote")) $("okoaNote").style.display = item.okOa ? "block" : "none";
     updateRefUI();
-    if (btnStk) btnStk.disabled = false;
-    if (btnWa) btnWa.disabled = false;
+    if (formStep) formStep.style.display = "block";
+    if (successBox) successBox.classList.remove("show");
+    if (btnConfirm) btnConfirm.disabled = false;
     if (modal) modal.classList.add("open");
     setTimeout(function () {
       if (phoneInput) phoneInput.focus();
@@ -417,6 +279,7 @@
     currentDeal = null;
   }
   on($("modalCancel"), "click", closeModal);
+  on($("doneBtn"), "click", closeModal);
   on(modal, "click", function (e) {
     if (e.target === modal) closeModal();
   });
@@ -426,8 +289,8 @@
     if (deal) openModal(deal, true);
   });
   on($("pillGift"), "click", function () {
-    if ($("promptCard")) $("promptCard").scrollIntoView({ behavior: "smooth" });
-    toast("Andika nambari → WhatsApp the friend");
+    setGiftMode(true);
+    toast("Tap Gift on a deal");
   });
 
   function validatePhone() {
@@ -435,120 +298,118 @@
     var phone = normalizePhone(phoneInput && phoneInput.value);
     if (!isValidKenyaPhone(phone)) {
       if (phoneError) phoneError.style.display = "block";
+      if (phoneInput) phoneInput.focus();
       return null;
     }
     if (phoneError) phoneError.style.display = "none";
-    return { phone: phone, name: ((nameInput && nameInput.value) || "").trim() };
+    return {
+      phone: phone,
+      name: ((nameInput && nameInput.value) || "").trim(),
+    };
   }
 
-  /** Button: send gift text TO friend from modal */
-  on(btnNotify, "click", function () {
-    var phone =
-      (lastGift && lastGift.phone) ||
-      normalizePhone(phoneInput && phoneInput.value);
-    var text = giftMessageForFriend({
-      yourName: (nameInput && nameInput.value) || "",
-      dealTitle: (currentDeal && currentDeal.title) || (lastGift && lastGift.title),
-      price: (currentDeal && currentDeal.price) || (lastGift && lastGift.price),
-      orderId: lastGift && lastGift.orderId,
-      note: lastGift
-        ? "Nimeweka order. Utapokea baada ya payment."
-        : "Ninakuwekea data sasa.",
-    });
-    if (openWhatsAppTo(phone, text)) {
-      toast("Message iko kwa WhatsApp ya rafiki — bofya Send");
-    }
-  });
+  function showSuccess(order) {
+    lastOrder = order;
+    if (formStep) formStep.style.display = "none";
+    if (successBox) successBox.classList.add("show");
+    if ($("successOid")) $("successOid").textContent = order.orderId;
+    if ($("successPay"))
+      $("successPay").textContent =
+        "Pay Ksh " + order.price + " to till " + C.till;
+    if ($("successPhone"))
+      $("successPhone").textContent =
+        (order.gift ? "Gift to: " : "Deliver to: ") + order.phone;
 
-  on(btnWa, "click", function () {
+    // Optional help only — prefilled, user chooses to open
+    var help = $("helpAfter");
+    if (help) {
+      help.style.display = "inline-flex";
+      help.href =
+        "https://wa.me/" +
+        C.whatsapp +
+        "?text=" +
+        encodeURIComponent(
+          "Habari, order " +
+            order.orderId +
+            "\nDeliver: " +
+            order.phone +
+            "\nDeal: " +
+            order.title +
+            "\nKsh " +
+            order.price +
+            "\nNimelipa / nitalipa till " +
+            C.till
+        );
+    }
+  }
+
+  // PRIMARY: create order on site, show till — no forced WhatsApp
+  on(btnConfirm, "click", function () {
     var v = validatePhone();
     if (!v) return;
-    if (btnWa) btnWa.disabled = true;
+    btnConfirm.disabled = true;
     if (stkStatus) {
       stkStatus.style.display = "block";
-      stkStatus.textContent = "Creating order…";
       stkStatus.className = "stk-status";
+      stkStatus.textContent = "Creating order…";
     }
-    createServerOrder(currentDeal, v.phone, v.name, "till_whatsapp", giftMode)
+    createServerOrder(currentDeal, v.phone, v.name, "till", giftMode)
       .then(function (data) {
-        lastGift = {
+        showSuccess({
           orderId: data.orderId,
           phone: v.phone,
-          title: currentDeal.title,
           price: currentDeal.price,
-        };
-        if (orderPreview) {
-          orderPreview.textContent =
-            "Order: " +
-            data.orderId +
-            "\n" +
-            (giftMode ? "Gift to: " : "To: ") +
-            v.phone +
-            "\nKsh " +
-            currentDeal.price;
-          orderPreview.style.display = "block";
-        }
-        if (stkStatus) {
-          stkStatus.textContent = giftMode
-            ? "Order saved. 1) Shop WhatsApp  2) Friend gets gift prompt"
-            : "Order saved · shop WhatsApp";
-          stkStatus.className = "stk-status ok";
-        }
-
-        // 1) Message to SHOP
-        openWhatsAppShop(
-          shopOrderText({
-            orderId: data.orderId,
-            gift: giftMode,
-            phone: v.phone,
-            title: currentDeal.title,
-            price: currentDeal.price,
-            name: v.name,
-            okoa: !!currentDeal.okOa,
-            ref: refCode,
-          })
-        );
-
-        // 2) If gift → message TO FRIEND (they see the gift prompt)
-        if (giftMode) {
-          if (btnNotify) btnNotify.style.display = "inline-flex";
-          setTimeout(function () {
-            var friendText = giftMessageForFriend({
-              yourName: v.name,
-              dealTitle: currentDeal.title,
-              price: currentDeal.price,
-              orderId: data.orderId,
-              note: "Nimeweka order na nitalipa. Utapokea baada ya confirmation.",
-            });
-            openWhatsAppTo(v.phone, friendText);
-            toast("Rafiki: tuma gift message kwenye WhatsApp yake");
-          }, 800);
-        } else {
-          toast("Order " + data.orderId);
-          setTimeout(closeModal, 500);
-        }
+          title: currentDeal.title,
+          gift: giftMode,
+        });
+        toast("Order " + data.orderId + " — pay till " + C.till);
       })
       .catch(function (e) {
         if (stkStatus) {
-          stkStatus.textContent = e.message || "Error";
           stkStatus.className = "stk-status err";
+          stkStatus.textContent = e.message || "Failed";
         }
-        if (btnWa) btnWa.disabled = false;
+        btnConfirm.disabled = false;
         toast(e.message || "Failed");
       });
   });
 
+  on($("copyOrderBtn"), "click", function () {
+    if (!lastOrder) return;
+    var text =
+      "Order ID: " +
+      lastOrder.orderId +
+      "\nDeal: " +
+      lastOrder.title +
+      "\nAmount: Ksh " +
+      lastOrder.price +
+      "\nTill: " +
+      C.till +
+      "\n" +
+      (lastOrder.gift ? "Gift to: " : "Deliver to: ") +
+      lastOrder.phone +
+      "\nPay: M-Pesa → Lipa na M-Pesa → Buy Goods";
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        toast("Copied Order ID + till details");
+      });
+    } else toast(text);
+  });
+
+  // Optional STK if configured
   on(btnStk, "click", function () {
     var v = validatePhone();
     if (!v) return;
+    btnStk.disabled = true;
     createServerOrder(currentDeal, v.phone, v.name, "stk", giftMode)
       .then(function (data) {
-        lastGift = {
+        showSuccess({
           orderId: data.orderId,
           phone: v.phone,
-          title: currentDeal.title,
           price: currentDeal.price,
-        };
+          title: currentDeal.title,
+          gift: giftMode,
+        });
         return fetch("/api/mpesa/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -558,35 +419,22 @@
             orderId: data.orderId,
             dealTitle: currentDeal.title,
           }),
-        }).then(function (res) {
-          return res.json().then(function (stk) {
-            return { orderId: data.orderId, stk: stk };
-          });
+        }).then(function (r) {
+          return r.json();
         });
       })
-      .then(function (r) {
-        if (r.stk && r.stk.ok) {
-          if (giftMode) {
-            setTimeout(function () {
-              openWhatsAppTo(
-                v.phone,
-                giftMessageForFriend({
-                  yourName: v.name,
-                  dealTitle: currentDeal.title,
-                  price: currentDeal.price,
-                  orderId: r.orderId,
-                  note: "Ninalipa sasa. Utapokea hivi karibuni.",
-                })
-              );
-            }, 600);
-          }
-          toast("Enter M-Pesa PIN");
-        } else toast((r.stk && r.stk.error) || "Use till instead");
+      .then(function (stk) {
+        if (stk && stk.ok) toast("Enter M-Pesa PIN on phone");
+        else toast((stk && stk.error) || "STK offline — use till");
+        btnStk.disabled = false;
       })
       .catch(function (e) {
         toast(e.message || "Error");
+        btnStk.disabled = false;
       });
   });
+
+  var dealIndex = {};
 
   function render(list, mountId) {
     var root = $(mountId);
@@ -604,6 +452,7 @@
       if (item.badge)
         chips.push('<span class="chip badge-' + item.badge + '">' + item.badge + "</span>");
       if (item.validity) chips.push('<span class="chip">' + item.validity + "</span>");
+
       var row = document.createElement("div");
       row.className = "deal";
       row.innerHTML =
@@ -615,9 +464,6 @@
         '<div class="price">Ksh ' +
         item.price +
         "</div>" +
-        '<button type="button" class="btn-ghost" data-act="share" data-id="' +
-        item.id +
-        '">Share</button>' +
         '<button type="button" class="btn btn-outline btn-sm" data-act="gift" data-id="' +
         item.id +
         '">Gift</button>' +
@@ -637,7 +483,6 @@
     var act = btn.getAttribute("data-act");
     if (act === "buy") openModal(item, false);
     else if (act === "gift") openModal(item, true);
-    else if (act === "share") shareDeal(item);
   });
 
   function renderData() {
@@ -656,20 +501,26 @@
 
   var faqRoot = $("faqList");
   if (faqRoot) {
-    (C.faq || []).forEach(function (item) {
+    var faqs = C.faq || [
+      {
+        q: "Do I need WhatsApp to buy?",
+        a: "No. Create order on the site, pay the till, keep your Order ID. WhatsApp is only for optional help.",
+      },
+      {
+        q: "How do I gift someone?",
+        a: "Tap Gift, enter their number as delivery phone, pay till from your line. They receive the bundle.",
+      },
+      {
+        q: "When do I get the data?",
+        a: "After we confirm your till payment against the Order ID. Keep the Order ID screenshot.",
+      },
+    ];
+    faqs.forEach(function (item) {
       var d = document.createElement("details");
       d.innerHTML = "<summary>" + item.q + "</summary><p>" + item.a + "</p>";
       faqRoot.appendChild(d);
     });
   }
-
-  on($("copyTill"), "click", function () {
-    if (navigator.clipboard)
-      navigator.clipboard.writeText(C.till).then(function () {
-        toast("Till " + C.till);
-      });
-    else toast("Till: " + C.till);
-  });
 
   fetch("/api/health")
     .then(function (r) {
@@ -680,5 +531,5 @@
     })
     .catch(function () {});
 
-  toast("Gift prompt → friend's WhatsApp");
+  toast("Pay till · Order ID on site");
 })();
