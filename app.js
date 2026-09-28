@@ -1,4 +1,4 @@
-/* Till-first shop — WhatsApp optional */
+/* Till-first + gift Accept/Decline link for friend */
 (function () {
   function showBoot(msg) {
     var el = document.getElementById("bootError");
@@ -10,7 +10,7 @@
 
   var C = window.BINGWA;
   if (!C) {
-    showBoot("Config failed. Open https://gamer-digital-services.vercel.app/?v=till1");
+    showBoot("Config failed. Open https://gamer-digital-services.vercel.app/?v=gift2");
     return;
   }
 
@@ -39,7 +39,6 @@
     return /^0[17]\d{8}$/.test(p);
   }
 
-  // Referral (optional)
   var params = new URLSearchParams(location.search);
   var refCode = (params.get("ref") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
   try {
@@ -112,7 +111,9 @@
     });
     if ($("pillOkoa")) $("pillOkoa").classList.toggle("on", okoaOnly);
     if ($("dataNote"))
-      $("dataNote").textContent = okoaOnly ? "Okoa-friendly only" : "Buy self or Gift another number";
+      $("dataNote").textContent = okoaOnly
+        ? "Okoa-friendly only"
+        : "Buy self or Gift (friend Accept/Decline)";
     renderData();
     switchTab("data");
   }
@@ -144,11 +145,11 @@
     switchTab("airtel");
   });
 
-  // Optional help links only
-  var helpText =
-    "Habari, naomba help. Order ID: (weka hapa)";
   var helpUrl =
-    "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(helpText);
+    "https://wa.me/" +
+    C.whatsapp +
+    "?text=" +
+    encodeURIComponent("Habari, naomba help. Order ID:");
   ["waTop", "waSide"].forEach(function (id) {
     if ($(id)) $(id).href = helpUrl;
   });
@@ -160,13 +161,14 @@
 
   var why = $("whyList");
   if (why) {
-    var feats = C.features || [
-      "Pay via M-Pesa till",
-      "Gift any number",
-      "Order ID on this site",
-      "WhatsApp only if you need help",
-    ];
-    feats.forEach(function (f) {
+    (
+      C.features || [
+        "Pay via M-Pesa till",
+        "Gift: friend Accept or Decline",
+        "Order ID on this site",
+        "WhatsApp optional",
+      ]
+    ).forEach(function (f) {
       var li = document.createElement("li");
       li.textContent = f;
       why.appendChild(li);
@@ -234,12 +236,12 @@
     if ($("pillGift")) $("pillGift").classList.toggle("on", giftMode);
     if ($("phoneLabel"))
       $("phoneLabel").textContent = giftMode
-        ? "Friend's phone (receives deal) *"
-        : "Your phone (receives deal) *";
+        ? "Friend's phone *"
+        : "Your phone *";
     if ($("phoneHint"))
       $("phoneHint").textContent = giftMode
-        ? "You pay the till · they get the bundle."
-        : "Pay till · bundle loads on this number.";
+        ? "They get a link to Accept or Decline. You pay till after they accept."
+        : "Pay till · bundle on this number.";
   }
   on($("modeSelf"), "click", function () {
     setGiftMode(false);
@@ -267,6 +269,8 @@
     updateRefUI();
     if (formStep) formStep.style.display = "block";
     if (successBox) successBox.classList.remove("show");
+    var giftBlock = $("giftLinkBlock");
+    if (giftBlock) giftBlock.style.display = "none";
     if (btnConfirm) btnConfirm.disabled = false;
     if (modal) modal.classList.add("open");
     setTimeout(function () {
@@ -308,19 +312,49 @@
     };
   }
 
-  function showSuccess(order) {
+  function giftLinkFor(orderId) {
+    return (
+      (C.siteUrl || location.origin).replace(/\/$/, "") +
+      "/gift.html?id=" +
+      encodeURIComponent(orderId)
+    );
+  }
+
+  function showSuccess(order, apiGiftLink) {
     lastOrder = order;
     if (formStep) formStep.style.display = "none";
     if (successBox) successBox.classList.add("show");
     if ($("successOid")) $("successOid").textContent = order.orderId;
-    if ($("successPay"))
-      $("successPay").textContent =
-        "Pay Ksh " + order.price + " to till " + C.till;
-    if ($("successPhone"))
-      $("successPhone").textContent =
-        (order.gift ? "Gift to: " : "Deliver to: ") + order.phone;
 
-    // Optional help only — prefilled, user chooses to open
+    var link = apiGiftLink || (order.gift ? giftLinkFor(order.orderId) : "");
+    order.giftLink = link;
+
+    if (order.gift && link) {
+      if ($("successPay"))
+        $("successPay").textContent =
+          "Send this link to your friend → they Accept or Decline";
+      if ($("successPhone"))
+        $("successPhone").textContent = "Gift to: " + order.phone;
+      var gb = $("giftLinkBlock");
+      if (gb) {
+        gb.style.display = "block";
+        if ($("giftLinkText")) $("giftLinkText").textContent = link;
+      }
+      if ($("successTillHint"))
+        $("successTillHint").textContent =
+          "After they Accept, pay Ksh " + order.price + " to till " + C.till;
+    } else {
+      if ($("successPay"))
+        $("successPay").textContent =
+          "Pay Ksh " + order.price + " to till " + C.till;
+      if ($("successPhone"))
+        $("successPhone").textContent = "Deliver to: " + order.phone;
+      if ($("giftLinkBlock")) $("giftLinkBlock").style.display = "none";
+      if ($("successTillHint"))
+        $("successTillHint").textContent =
+          "M-Pesa → Lipa na M-Pesa → Buy Goods → till → amount → PIN";
+    }
+
     var help = $("helpAfter");
     if (help) {
       help.style.display = "inline-flex";
@@ -329,21 +363,11 @@
         C.whatsapp +
         "?text=" +
         encodeURIComponent(
-          "Habari, order " +
-            order.orderId +
-            "\nDeliver: " +
-            order.phone +
-            "\nDeal: " +
-            order.title +
-            "\nKsh " +
-            order.price +
-            "\nNimelipa / nitalipa till " +
-            C.till
+          "Order " + order.orderId + " · " + order.phone + " · Ksh " + order.price
         );
     }
   }
 
-  // PRIMARY: create order on site, show till — no forced WhatsApp
   on(btnConfirm, "click", function () {
     var v = validatePhone();
     if (!v) return;
@@ -351,18 +375,27 @@
     if (stkStatus) {
       stkStatus.style.display = "block";
       stkStatus.className = "stk-status";
-      stkStatus.textContent = "Creating order…";
+      stkStatus.textContent = giftMode
+        ? "Creating gift invite…"
+        : "Creating order…";
     }
     createServerOrder(currentDeal, v.phone, v.name, "till", giftMode)
       .then(function (data) {
-        showSuccess({
-          orderId: data.orderId,
-          phone: v.phone,
-          price: currentDeal.price,
-          title: currentDeal.title,
-          gift: giftMode,
-        });
-        toast("Order " + data.orderId + " — pay till " + C.till);
+        showSuccess(
+          {
+            orderId: data.orderId,
+            phone: v.phone,
+            price: currentDeal.price,
+            title: currentDeal.title,
+            gift: giftMode,
+          },
+          data.giftLink
+        );
+        toast(
+          giftMode
+            ? "Gift link ready — send to friend"
+            : "Order " + data.orderId + " — pay till"
+        );
       })
       .catch(function (e) {
         if (stkStatus) {
@@ -376,40 +409,61 @@
 
   on($("copyOrderBtn"), "click", function () {
     if (!lastOrder) return;
-    var text =
-      "Order ID: " +
-      lastOrder.orderId +
-      "\nDeal: " +
-      lastOrder.title +
-      "\nAmount: Ksh " +
-      lastOrder.price +
-      "\nTill: " +
-      C.till +
-      "\n" +
-      (lastOrder.gift ? "Gift to: " : "Deliver to: ") +
-      lastOrder.phone +
-      "\nPay: M-Pesa → Lipa na M-Pesa → Buy Goods";
+    var text;
+    if (lastOrder.gift && lastOrder.giftLink) {
+      text =
+        "Habari, nimekutengenezea gift ya data.\n" +
+        lastOrder.title +
+        " (Ksh " +
+        lastOrder.price +
+        ")\n" +
+        "Fungua link hii Accept au Decline:\n" +
+        lastOrder.giftLink;
+    } else {
+      text =
+        "Order ID: " +
+        lastOrder.orderId +
+        "\nDeal: " +
+        lastOrder.title +
+        "\nAmount: Ksh " +
+        lastOrder.price +
+        "\nTill: " +
+        C.till +
+        "\nDeliver: " +
+        lastOrder.phone;
+    }
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function () {
-        toast("Copied Order ID + till details");
+        toast(lastOrder.gift ? "Gift message + link copied" : "Order details copied");
       });
     } else toast(text);
   });
 
-  // Optional STK if configured
+  on($("copyGiftLinkBtn"), "click", function () {
+    if (!lastOrder || !lastOrder.giftLink) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(lastOrder.giftLink).then(function () {
+        toast("Gift link copied — send to friend");
+      });
+    } else toast(lastOrder.giftLink);
+  });
+
   on(btnStk, "click", function () {
     var v = validatePhone();
     if (!v) return;
     btnStk.disabled = true;
     createServerOrder(currentDeal, v.phone, v.name, "stk", giftMode)
       .then(function (data) {
-        showSuccess({
-          orderId: data.orderId,
-          phone: v.phone,
-          price: currentDeal.price,
-          title: currentDeal.title,
-          gift: giftMode,
-        });
+        showSuccess(
+          {
+            orderId: data.orderId,
+            phone: v.phone,
+            price: currentDeal.price,
+            title: currentDeal.title,
+            gift: giftMode,
+          },
+          data.giftLink
+        );
         return fetch("/api/mpesa/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -424,8 +478,8 @@
         });
       })
       .then(function (stk) {
-        if (stk && stk.ok) toast("Enter M-Pesa PIN on phone");
-        else toast((stk && stk.error) || "STK offline — use till");
+        if (stk && stk.ok) toast("Enter M-Pesa PIN");
+        else toast((stk && stk.error) || "Use till");
         btnStk.disabled = false;
       })
       .catch(function (e) {
@@ -501,21 +555,20 @@
 
   var faqRoot = $("faqList");
   if (faqRoot) {
-    var faqs = C.faq || [
+    [
       {
-        q: "Do I need WhatsApp to buy?",
-        a: "No. Create order on the site, pay the till, keep your Order ID. WhatsApp is only for optional help.",
+        q: "Do I need WhatsApp?",
+        a: "No. Orders and gift Accept/Decline work on this website. WhatsApp is optional help only.",
       },
       {
-        q: "How do I gift someone?",
-        a: "Tap Gift, enter their number as delivery phone, pay till from your line. They receive the bundle.",
+        q: "How does gifting work?",
+        a: "Tap Gift → enter friend's number → create order → copy the gift link → send it any way (SMS, Telegram, etc.). Friend opens link and taps Accept or Decline. After Accept, you pay the till.",
       },
       {
-        q: "When do I get the data?",
-        a: "After we confirm your till payment against the Order ID. Keep the Order ID screenshot.",
+        q: "When is data delivered?",
+        a: "After payment is confirmed on the till against your Order ID (and gift accepted if it was a gift).",
       },
-    ];
-    faqs.forEach(function (item) {
+    ].forEach(function (item) {
       var d = document.createElement("details");
       d.innerHTML = "<summary>" + item.q + "</summary><p>" + item.a + "</p>";
       faqRoot.appendChild(d);
@@ -531,5 +584,5 @@
     })
     .catch(function () {});
 
-  toast("Pay till · Order ID on site");
+  toast("Gift: friend Accept / Decline on link");
 })();
