@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Gamer Digital Services — Pay Till · Gift any number</title>
-  <meta name="description" content="Buy data with M-Pesa till. Gift any number. Order ID on site. WhatsApp optional." />
+  <title>Gamer Digital Services — Till pay · Gift Accept/Decline</title>
   <meta name="theme-color" content="#00a651" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -170,9 +169,13 @@
     }
     .success-box .payline { font-size: 14px; font-weight: 700; margin: 8px 0; }
     .success-box .mini { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .gift-link-box {
+      display: none; margin-top: 12px; background: #fff; border: 2px dashed var(--green);
+      border-radius: 12px; padding: 12px; text-align: left; word-break: break-all;
+    }
+    .gift-link-box .lbl { font-size: 11px; font-weight: 800; color: var(--green-dark); text-transform: uppercase; margin-bottom: 6px; }
+    .gift-link-box code { font-size: 12px; color: var(--ink); }
     .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-    .modal-actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .modal-actions-row .btn { flex: 1; min-width: 120px; }
     .stk-status {
       margin-top: 8px; font-size: 13px; font-weight: 700; display: none; padding: 10px; border-radius: 10px;
     }
@@ -198,11 +201,11 @@
     <div class="wrap nav">
       <div class="brand">
         <div class="mark">G</div>
-        <div>GAMER DIGITAL<small>Pay till · Order ID on site</small></div>
+        <div>GAMER DIGITAL<small>Till · Gift Accept/Decline</small></div>
       </div>
       <div class="nav-actions">
         <a class="btn btn-outline" href="agent.html">Agent</a>
-        <a class="btn btn-green" id="waTop" target="_blank" rel="noopener">Help (optional)</a>
+        <a class="btn btn-green" id="waTop" target="_blank" rel="noopener">Help</a>
       </div>
     </div>
   </header>
@@ -210,10 +213,10 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Buy or gift → pay M-Pesa till → keep Order ID. WhatsApp is optional.</p>
+      <p id="heroSub">Gift: friend Accepts or Declines on a link. You pay till. WhatsApp optional.</p>
       <div class="pills">
-        <button type="button" class="pill" id="pillOkoa">Okoa deals</button>
-        <button type="button" class="pill" id="pillGift">Gift a number</button>
+        <button type="button" class="pill" id="pillOkoa">Okoa</button>
+        <button type="button" class="pill" id="pillGift">Gift</button>
         <button type="button" class="pill" id="pillRef">Referral</button>
         <button type="button" class="pill" id="pillAirtel">Airtel</button>
       </div>
@@ -222,23 +225,21 @@
 
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
-
     <div class="how">
-      <h2>How to buy (till only — no WhatsApp required)</h2>
+      <h2>Gift a friend (Accept / Decline)</h2>
       <ol>
-        <li>Choose a deal → <b>Buy</b> or <b>Gift</b></li>
-        <li>Enter the phone that should <b>receive</b> the bundle</li>
-        <li>Tap <b>Create order &amp; show till</b></li>
-        <li>Pay amount to till <b id="tillHow">6872649</b> (Lipa na M-Pesa → Buy Goods)</li>
-        <li>Save your <b>Order ID</b> on screen — delivery after payment is confirmed</li>
+        <li>Tap <b>Gift</b> → enter friend's number</li>
+        <li>Create order → get a <b>gift link</b></li>
+        <li>Send the link any way (SMS, Telegram, call, etc.)</li>
+        <li>Friend opens link → <b>Accept</b> or <b>Decline</b></li>
+        <li>If Accept → you pay till <b id="tillHow">6872649</b> → we deliver</li>
       </ol>
-      <p class="note-soft">WhatsApp is only for optional help or if you want to message support. Service is order + till + delivery phone.</p>
+      <p class="note-soft">No WhatsApp required. Link is enough for the friend to respond.</p>
     </div>
-
     <div class="tools">
       <div class="tool-card" id="refTool">
-        <h3>Referral code (optional)</h3>
-        <input id="refInput" type="text" placeholder="e.g. JANE01" maxlength="16" />
+        <h3>Referral (optional)</h3>
+        <input id="refInput" type="text" placeholder="CODE" maxlength="16" />
         <div class="tool-row">
           <button type="button" class="btn btn-green" id="applyRef">Apply</button>
           <button type="button" class="btn btn-outline" id="clearRef">Clear</button>
@@ -246,9 +247,8 @@
         <p id="refStatus" style="font-size:12px;color:var(--muted);margin-top:8px">No code</p>
       </div>
       <div class="tool-card">
-        <h3>Gift a number</h3>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">You pay till · they receive the deal.</p>
-        <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Start gift order</button>
+        <h3>Start gift</h3>
+        <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Gift a number</button>
       </div>
     </div>
   </div>
@@ -269,27 +269,26 @@
       </div>
       <article class="card panel active" id="panel-data">
         <h2>Data</h2>
-        <p class="section-note" id="dataNote">Buy self or Gift another number</p>
+        <p class="section-note" id="dataNote">Buy or Gift (Accept/Decline link)</p>
         <div id="dataDeals"></div>
       </article>
       <article class="card panel" id="panel-minutes"><h2>Minutes</h2><div id="minuteDeals"></div></article>
       <article class="card panel" id="panel-sms"><h2>SMS</h2><div id="smsDeals"></div></article>
       <article class="card panel" id="panel-tunu"><h2>Tunukiwa</h2><div id="tunuDeals"></div></article>
-      <article class="card panel" id="panel-airtel"><h2>Airtel</h2><p class="section-note">Airtel line only</p><div id="airtelDeals"></div></article>
+      <article class="card panel" id="panel-airtel"><h2>Airtel</h2><div id="airtelDeals"></div></article>
       <article class="card panel faq" id="panel-faq"><h2>FAQ</h2><div id="faqList"></div></article>
     </div>
-
     <aside>
       <div class="pay">
         <h3>LIPA NA M-PESA</h3>
-        <p class="tag">Buy Goods &amp; Services · Till</p>
+        <p class="tag">Buy Goods · Till</p>
         <div class="till" id="tillDigits"></div>
-        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till number</button>
+        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till</button>
         <ol class="steps">
-          <li>M-Pesa → Lipa na M-Pesa</li>
-          <li>Buy Goods → Till <b id="tillText"></b></li>
-          <li>Enter amount from your order</li>
-          <li>Keep Order ID from this site</li>
+          <li>Create order / gift on site</li>
+          <li>Friend Accepts (if gift)</li>
+          <li>Pay till <b id="tillText"></b></li>
+          <li>Keep Order ID</li>
         </ol>
       </div>
       <div class="card" style="margin-top:12px">
@@ -297,9 +296,7 @@
         <ul id="whyList" style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)"></ul>
       </div>
       <div class="card" style="margin-top:12px">
-        <h2>Support (optional)</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Only if you need help — send Order ID.</p>
-        <a class="btn btn-wa" id="waSide" target="_blank" rel="noopener" style="width:100%">WhatsApp help</a>
+        <a class="btn btn-wa" id="waSide" target="_blank" rel="noopener" style="width:100%">Optional help</a>
         <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent</a>
       </div>
     </aside>
@@ -307,11 +304,10 @@
 
   <footer>
     <div class="wrap foot">
-      <div>Gamer Digital Services · Till-based orders</div>
+      <div>Gamer Digital Services</div>
       <div id="footPhone"></div>
     </div>
   </footer>
-
   <div class="toast" id="toast">OK</div>
 
   <div class="modal-backdrop" id="orderModal">
@@ -320,49 +316,48 @@
       <p class="sub" id="modalSub"></p>
 
       <div id="formStep">
-        <label>Who receives the deal?</label>
+        <label>Who receives?</label>
         <div class="seg">
           <button type="button" class="on" id="modeSelf">Myself</button>
-          <button type="button" id="modeGift">Gift another number</button>
+          <button type="button" id="modeGift">Gift friend</button>
         </div>
-
-        <label for="phoneInput" id="phoneLabel">Phone that receives deal *</label>
-        <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
-        <p class="hint" id="phoneHint">This is the delivery number — not payment method.</p>
-        <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
-
-        <label for="nameInput">Name (optional)</label>
-        <input id="nameInput" type="text" placeholder="Your name" maxlength="40" />
-
-        <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">Okoa-friendly deal</div>
+        <label for="phoneInput" id="phoneLabel">Phone *</label>
+        <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" />
+        <p class="hint" id="phoneHint">Delivery number</p>
+        <p class="error" id="phoneError">Invalid number</p>
+        <label for="nameInput">Your name (shown on gift)</label>
+        <input id="nameInput" type="text" maxlength="40" placeholder="e.g. Jane" />
+        <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">Okoa OK</div>
         <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-size:13px;font-weight:700;color:#92400e"></div>
-
         <div class="stk-status" id="stkStatus"></div>
-
         <div class="modal-actions">
-          <button type="button" class="btn btn-green" id="modalConfirm">Create order &amp; show till</button>
-          <button type="button" class="btn btn-outline" id="modalStk" style="display:none">Pay with STK (if enabled)</button>
+          <button type="button" class="btn btn-green" id="modalConfirm">Create order / gift invite</button>
+          <button type="button" class="btn btn-outline" id="modalStk" style="display:none">STK (optional)</button>
           <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
         </div>
       </div>
 
       <div class="success-box" id="successBox">
-        <div style="font-weight:800;color:var(--green-dark)">Order created</div>
+        <div style="font-weight:800;color:var(--green-dark)">Ready</div>
         <div class="oid" id="successOid">GDS-XXXX</div>
-        <div class="payline" id="successPay">Pay Ksh XX to till XXXXXXX</div>
+        <div class="payline" id="successPay"></div>
         <div class="mini" id="successPhone"></div>
-        <div class="mini">Lipa na M-Pesa → Buy Goods → enter till → amount → PIN</div>
-        <div class="mini" style="margin-top:10px">Screenshot this Order ID. Delivery after payment is confirmed on our side.</div>
+        <div class="gift-link-box" id="giftLinkBlock">
+          <div class="lbl">Friend opens this → Accept or Decline</div>
+          <code id="giftLinkText"></code>
+        </div>
+        <div class="mini" id="successTillHint"></div>
         <div class="modal-actions" style="margin-top:12px">
-          <button type="button" class="btn btn-dark" id="copyOrderBtn">Copy Order ID + till details</button>
+          <button type="button" class="btn btn-green" id="copyGiftLinkBtn">Copy gift link for friend</button>
+          <button type="button" class="btn btn-dark" id="copyOrderBtn">Copy full message</button>
           <button type="button" class="btn btn-outline" id="doneBtn">Done</button>
-          <a class="btn btn-wa" id="helpAfter" target="_blank" rel="noopener" style="display:none">Optional: WhatsApp help</a>
+          <a class="btn btn-wa" id="helpAfter" target="_blank" rel="noopener" style="display:none">Optional help</a>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="config.js?v=till1"></script>
-  <script src="app.js?v=till1"></script>
+  <script src="config.js?v=gift2"></script>
+  <script src="app.js?v=gift2"></script>
 </body>
 </html>
