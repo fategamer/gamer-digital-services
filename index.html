@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Gamer Digital Services — Gift prompt to friend</title>
+  <title>Gamer Digital Services — Pay Till · Gift any number</title>
+  <meta name="description" content="Buy data with M-Pesa till. Gift any number. Order ID on site. WhatsApp optional." />
   <meta name="theme-color" content="#00a651" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -16,10 +17,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Inter, system-ui, sans-serif; color: var(--ink); background: #f4faf6; line-height: 1.45; }
     a { color: inherit; text-decoration: none; }
-    button, .btn, .pill, .tab, .filter-chip, .btn-ghost { touch-action: manipulation; cursor: pointer; font-family: inherit; }
+    button, .btn, .pill, .tab, .filter-chip { touch-action: manipulation; cursor: pointer; font-family: inherit; }
     .wrap { width: min(1100px, calc(100% - 24px)); margin: 0 auto; }
     header { background: #fff; border-bottom: 3px solid var(--green); position: sticky; top: 0; z-index: 20; }
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; gap: 10px; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
     .mark {
       width: 42px; height: 42px; border-radius: 50%;
@@ -44,38 +45,31 @@
     .hero p { margin-top: 8px; font-size: 15px; opacity: .95; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .pill {
-      background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.5);
+      background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.45);
       padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #fff; min-height: 44px;
     }
+    .pill.on { background: #fff; color: var(--green-dark); }
     .ref-banner {
       display: none; background: #fef3c7; color: #92400e; font-weight: 800; text-align: center;
       padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 2px solid #f59e0b;
     }
     .ref-banner.show { display: block; }
-    .prompt-card {
-      background: #fff; border: 3px solid #25D366; border-radius: 18px; padding: 16px;
+    .how {
+      background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 16px;
       margin-bottom: 14px; box-shadow: var(--shadow);
     }
-    .prompt-card h2 { font-size: 17px; color: #128C7E; margin-bottom: 4px; }
-    .prompt-card .lead { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
-    .prompt-card label { display: block; font-size: 12px; font-weight: 800; margin: 10px 0 4px; }
-    .prompt-card input, .prompt-card select, .prompt-card textarea {
-      width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 12px; font-size: 16px; font-family: inherit;
-    }
-    .prompt-card textarea { min-height: 64px; }
-    .prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .prompt-actions .btn { flex: 1; min-width: 160px; }
-    .preview-box {
-      margin-top: 12px; background: #e7f8ef; border: 1px dashed var(--green); border-radius: 12px;
-      padding: 12px; font-size: 13px; white-space: pre-wrap; display: none; color: var(--ink);
-    }
-    .preview-box.show { display: block; }
-    .preview-label { font-size: 11px; font-weight: 800; color: #128C7E; margin-bottom: 6px; text-transform: uppercase; }
+    .how h2 { font-size: 16px; color: var(--green-dark); margin-bottom: 8px; }
+    .how ol { margin-left: 18px; font-size: 14px; color: var(--muted); }
+    .how li { margin: 6px 0; }
+    .how b { color: var(--ink); }
     .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     @media (max-width: 640px) { .tools { grid-template-columns: 1fr; } }
     .tool-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
     .tool-card h3 { font-size: 14px; color: var(--green-dark); margin-bottom: 8px; }
-    .tool-card input { width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 10px; font-size: 16px; margin-bottom: 8px; }
+    .tool-card input {
+      width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 10px;
+      font-size: 16px; margin-bottom: 8px; font-family: inherit;
+    }
     .tool-row { display: flex; gap: 8px; }
     .tool-row .btn { flex: 1; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -104,42 +98,44 @@
     }
     .deal b { font-size: 15px; display: block; }
     .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-    .chip { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: #eef6f1; color: var(--green-dark); }
+    .chip {
+      font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+      background: #eef6f1; color: var(--green-dark);
+    }
     .chip.badge-HOT, .chip.badge-FLASH { background: #fee2e2; color: #b91c1c; }
     .chip.badge-POPULAR, .chip.badge-VALUE { background: #fef3c7; color: #b45309; }
     .chip.badge-MONTHLY, .chip.badge-COMBO, .chip.badge-WEEKLY { background: #e0e7ff; color: #3730a3; }
     .chip.airtel { background: #fce7f3; color: #9d174d; }
     .chip.okoa { background: #d1fae5; color: #065f46; }
     .deal-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
-    .price { background: var(--green-soft); color: var(--green-dark); font-weight: 900; padding: 8px 10px; border-radius: 10px; }
+    .price {
+      background: var(--green-soft); color: var(--green-dark); font-weight: 900;
+      padding: 8px 10px; border-radius: 10px;
+    }
     .btn-sm { padding: 10px 14px; font-size: 13px; min-height: 42px; }
-    .btn-ghost {
-      background: transparent; border: 1px solid var(--line); color: var(--muted);
-      padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; min-height: 42px;
+    .pay {
+      background: #fff; border: 3px solid var(--green); border-radius: 18px;
+      padding: 16px; text-align: center;
     }
-    .pay { background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 14px; text-align: center; }
-    .pay h3 { color: var(--green-dark); }
-    .till { display: flex; justify-content: center; gap: 5px; margin: 10px 0; flex-wrap: wrap; }
+    .pay h3 { color: var(--green-dark); font-size: 18px; }
+    .pay .tag { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .till { display: flex; justify-content: center; gap: 5px; margin: 12px 0; flex-wrap: wrap; }
     .digit {
-      width: 38px; height: 46px; border: 2px solid var(--ink); border-radius: 8px;
-      display: grid; place-items: center; font-size: 20px; font-weight: 900;
+      width: 40px; height: 48px; border: 2px solid var(--ink); border-radius: 8px;
+      display: grid; place-items: center; font-size: 22px; font-weight: 900; background: #fff;
     }
-    .steps { text-align: left; color: var(--muted); font-size: 13px; margin-top: 10px; }
-    .steps li { margin: 5px 0 5px 16px; }
+    .steps { text-align: left; color: var(--muted); font-size: 13px; margin-top: 12px; }
+    .steps li { margin: 6px 0 6px 16px; }
     .faq details { border-bottom: 1px solid var(--line); padding: 12px 0; }
     .faq summary { font-weight: 800; font-size: 14px; cursor: pointer; list-style: none; }
     .faq summary::-webkit-details-marker { display: none; }
     .faq p { margin-top: 6px; font-size: 13px; color: var(--muted); }
     footer { margin-top: 24px; background: var(--green-dark); color: #fff; padding: 16px 0; }
     .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; }
-    .wa-float {
-      position: fixed; right: 14px; bottom: 14px; z-index: 30; background: #25D366; color: #fff;
-      border-radius: 999px; padding: 14px 16px; font-weight: 800; font-size: 14px;
-    }
     .toast {
-      position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%);
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
       background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 10px;
-      display: none; z-index: 80; font-size: 14px; font-weight: 700; max-width: 90%;
+      display: none; z-index: 80; font-size: 14px; font-weight: 700; max-width: 92%;
     }
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(16,34,23,.55); display: none;
@@ -147,11 +143,11 @@
     }
     .modal-backdrop.open { display: flex; pointer-events: auto; }
     .modal {
-      background: #fff; width: min(420px, 100%); border-radius: 18px; padding: 18px 16px;
+      background: #fff; width: min(440px, 100%); border-radius: 18px; padding: 18px 16px;
       max-height: 92vh; overflow-y: auto; pointer-events: auto;
     }
     .modal h3 { font-size: 17px; }
-    .modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
     .modal label { display: block; font-size: 13px; font-weight: 800; margin: 12px 0 4px; }
     .modal input {
       width: 100%; padding: 14px 12px; border: 2px solid var(--line); border-radius: 12px; font-size: 16px;
@@ -161,16 +157,22 @@
     .seg { display: flex; gap: 8px; }
     .seg button {
       flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 12px;
-      padding: 12px; font-weight: 800; font-size: 12px; color: var(--muted); min-height: 48px;
+      padding: 12px; font-weight: 800; font-size: 13px; color: var(--muted); min-height: 48px;
     }
     .seg button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
-    .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-    .modal-actions-row { display: flex; gap: 8px; }
-    .modal-actions-row .btn { flex: 1; }
-    .order-preview {
-      background: var(--green-soft); border-radius: 12px; padding: 10px; margin-top: 10px;
-      font-size: 13px; display: none; white-space: pre-wrap;
+    .success-box {
+      display: none; margin-top: 12px; background: var(--green-soft); border: 2px solid var(--green);
+      border-radius: 14px; padding: 14px; text-align: center;
     }
+    .success-box.show { display: block; }
+    .success-box .oid {
+      font-size: 22px; font-weight: 900; color: var(--green-dark); letter-spacing: 1px; margin: 6px 0;
+    }
+    .success-box .payline { font-size: 14px; font-weight: 700; margin: 8px 0; }
+    .success-box .mini { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .modal-actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .modal-actions-row .btn { flex: 1; min-width: 120px; }
     .stk-status {
       margin-top: 8px; font-size: 13px; font-weight: 700; display: none; padding: 10px; border-radius: 10px;
     }
@@ -179,20 +181,28 @@
     .panel { display: none; }
     .panel.active { display: block; }
     .empty { padding: 16px; text-align: center; color: var(--muted); }
-    #bootError { display: none; background: #fde8e8; color: #b91c1c; padding: 12px; margin: 12px auto; max-width: 1100px; border-radius: 10px; font-weight: 700; }
+    #bootError {
+      display: none; background: #fde8e8; color: #b91c1c; padding: 12px; margin: 12px auto;
+      max-width: 1100px; border-radius: 10px; font-weight: 700;
+    }
+    .note-soft {
+      background: #f0f4f2; border-radius: 12px; padding: 10px 12px; font-size: 12px;
+      color: var(--muted); margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <div id="bootError" class="wrap"></div>
+
   <header>
     <div class="wrap nav">
       <div class="brand">
         <div class="mark">G</div>
-        <div>GAMER DIGITAL<small>Innovation Network · Kenya</small></div>
+        <div>GAMER DIGITAL<small>Pay till · Order ID on site</small></div>
       </div>
       <div class="nav-actions">
         <a class="btn btn-outline" href="agent.html">Agent</a>
-        <a class="btn btn-green" id="waTop" target="_blank" rel="noopener">Shop WA</a>
+        <a class="btn btn-green" id="waTop" target="_blank" rel="noopener">Help (optional)</a>
       </div>
     </div>
   </header>
@@ -200,11 +210,10 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Gift prompt inaenda WhatsApp ya rafiki moja kwa moja</p>
+      <p id="heroSub">Buy or gift → pay M-Pesa till → keep Order ID. WhatsApp is optional.</p>
       <div class="pills">
-        <button type="button" class="pill" id="pillPrompt">Prompt a friend</button>
-        <button type="button" class="pill" id="pillOkoa">Okoa</button>
-        <button type="button" class="pill" id="pillGift">Gift</button>
+        <button type="button" class="pill" id="pillOkoa">Okoa deals</button>
+        <button type="button" class="pill" id="pillGift">Gift a number</button>
         <button type="button" class="pill" id="pillRef">Referral</button>
         <button type="button" class="pill" id="pillAirtel">Airtel</button>
       </div>
@@ -214,35 +223,22 @@
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
 
-    <div class="prompt-card" id="promptCard">
-      <h2>🎁 Prompt gift → friend's WhatsApp</h2>
-      <p class="lead">
-        Andika nambari ya rafiki. Message itaonekana <b>kwenye WhatsApp yake</b> (sio shop).
-        Bofya Send kwenye WhatsApp yake.
-      </p>
-      <label for="promptPhone">Nambari ya rafiki *</label>
-      <input id="promptPhone" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" />
-      <label for="promptName">Jina lako (linaonekana kwa rafiki)</label>
-      <input id="promptName" type="text" placeholder="e.g. Jane" maxlength="40" />
-      <label for="promptDeal">Deal</label>
-      <select id="promptDeal"><option value="">— Chagua deal —</option></select>
-      <label for="promptNote">Note (optional)</label>
-      <textarea id="promptNote" placeholder="e.g. Nimekulipia data"></textarea>
-
-      <div class="preview-box" id="promptPreview">
-        <div class="preview-label">Message rafiki ataona</div>
-      </div>
-
-      <div class="prompt-actions">
-        <button type="button" class="btn btn-wa" id="btnPromptFriend">Open friend's WhatsApp with gift text</button>
-        <button type="button" class="btn btn-green" id="btnOrderForFriend">Then order for this number</button>
-      </div>
+    <div class="how">
+      <h2>How to buy (till only — no WhatsApp required)</h2>
+      <ol>
+        <li>Choose a deal → <b>Buy</b> or <b>Gift</b></li>
+        <li>Enter the phone that should <b>receive</b> the bundle</li>
+        <li>Tap <b>Create order &amp; show till</b></li>
+        <li>Pay amount to till <b id="tillHow">6872649</b> (Lipa na M-Pesa → Buy Goods)</li>
+        <li>Save your <b>Order ID</b> on screen — delivery after payment is confirmed</li>
+      </ol>
+      <p class="note-soft">WhatsApp is only for optional help or if you want to message support. Service is order + till + delivery phone.</p>
     </div>
 
     <div class="tools">
       <div class="tool-card" id="refTool">
-        <h3>Referral</h3>
-        <input id="refInput" type="text" placeholder="CODE" maxlength="16" />
+        <h3>Referral code (optional)</h3>
+        <input id="refInput" type="text" placeholder="e.g. JANE01" maxlength="16" />
         <div class="tool-row">
           <button type="button" class="btn btn-green" id="applyRef">Apply</button>
           <button type="button" class="btn btn-outline" id="clearRef">Clear</button>
@@ -250,8 +246,9 @@
         <p id="refStatus" style="font-size:12px;color:var(--muted);margin-top:8px">No code</p>
       </div>
       <div class="tool-card">
-        <h3>Quick gift order</h3>
-        <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Open gift order</button>
+        <h3>Gift a number</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">You pay till · they receive the deal.</p>
+        <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Start gift order</button>
       </div>
     </div>
   </div>
@@ -270,22 +267,29 @@
         <button type="button" class="filter-chip on" data-filter="all">All</button>
         <button type="button" class="filter-chip" data-filter="okoa">Okoa only</button>
       </div>
-      <article class="card panel active" id="panel-data"><h2>Data</h2><p class="section-note" id="dataNote">Buy or Gift</p><div id="dataDeals"></div></article>
+      <article class="card panel active" id="panel-data">
+        <h2>Data</h2>
+        <p class="section-note" id="dataNote">Buy self or Gift another number</p>
+        <div id="dataDeals"></div>
+      </article>
       <article class="card panel" id="panel-minutes"><h2>Minutes</h2><div id="minuteDeals"></div></article>
       <article class="card panel" id="panel-sms"><h2>SMS</h2><div id="smsDeals"></div></article>
       <article class="card panel" id="panel-tunu"><h2>Tunukiwa</h2><div id="tunuDeals"></div></article>
-      <article class="card panel" id="panel-airtel"><h2>Airtel</h2><div id="airtelDeals"></div></article>
+      <article class="card panel" id="panel-airtel"><h2>Airtel</h2><p class="section-note">Airtel line only</p><div id="airtelDeals"></div></article>
       <article class="card panel faq" id="panel-faq"><h2>FAQ</h2><div id="faqList"></div></article>
     </div>
+
     <aside>
       <div class="pay">
         <h3>LIPA NA M-PESA</h3>
+        <p class="tag">Buy Goods &amp; Services · Till</p>
         <div class="till" id="tillDigits"></div>
-        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till</button>
+        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till number</button>
         <ol class="steps">
-          <li>Prompt friend → <b>their</b> WhatsApp</li>
-          <li>Order + pay till <b id="tillText"></b></li>
-          <li>Keep Order ID</li>
+          <li>M-Pesa → Lipa na M-Pesa</li>
+          <li>Buy Goods → Till <b id="tillText"></b></li>
+          <li>Enter amount from your order</li>
+          <li>Keep Order ID from this site</li>
         </ol>
       </div>
       <div class="card" style="margin-top:12px">
@@ -293,7 +297,9 @@
         <ul id="whyList" style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)"></ul>
       </div>
       <div class="card" style="margin-top:12px">
-        <a class="btn btn-green" id="waSide" target="_blank" rel="noopener" style="width:100%">Shop WhatsApp</a>
+        <h2>Support (optional)</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Only if you need help — send Order ID.</p>
+        <a class="btn btn-wa" id="waSide" target="_blank" rel="noopener" style="width:100%">WhatsApp help</a>
         <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent</a>
       </div>
     </aside>
@@ -301,44 +307,62 @@
 
   <footer>
     <div class="wrap foot">
-      <div>Gamer Digital Services</div>
+      <div>Gamer Digital Services · Till-based orders</div>
       <div id="footPhone"></div>
     </div>
   </footer>
-  <a class="wa-float" id="waFloat" target="_blank" rel="noopener">WhatsApp</a>
+
   <div class="toast" id="toast">OK</div>
 
   <div class="modal-backdrop" id="orderModal">
     <div class="modal" onclick="event.stopPropagation()">
       <h3 id="modalTitle">Order</h3>
       <p class="sub" id="modalSub"></p>
-      <label>Who for?</label>
-      <div class="seg">
-        <button type="button" class="on" id="modeSelf">Myself</button>
-        <button type="button" id="modeGift">Gift friend</button>
-      </div>
-      <label for="phoneInput" id="phoneLabel">Phone *</label>
-      <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" />
-      <p class="hint" id="phoneHint">Receives the bundle.</p>
-      <p class="error" id="phoneError">Invalid number.</p>
-      <label for="nameInput" id="nameLabel">Name</label>
-      <input id="nameInput" type="text" maxlength="40" />
-      <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-weight:700;color:#065f46;font-size:13px">Okoa OK</div>
-      <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-weight:700;color:#92400e;font-size:13px"></div>
-      <div class="order-preview" id="orderPreview"></div>
-      <div class="stk-status" id="stkStatus"></div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-green" id="modalStk" style="display:none">STK Pay</button>
-        <button type="button" class="btn btn-wa" id="modalNotifyFriend" style="display:none">Send gift text to friend's WhatsApp</button>
-        <div class="modal-actions-row">
+
+      <div id="formStep">
+        <label>Who receives the deal?</label>
+        <div class="seg">
+          <button type="button" class="on" id="modeSelf">Myself</button>
+          <button type="button" id="modeGift">Gift another number</button>
+        </div>
+
+        <label for="phoneInput" id="phoneLabel">Phone that receives deal *</label>
+        <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
+        <p class="hint" id="phoneHint">This is the delivery number — not payment method.</p>
+        <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
+
+        <label for="nameInput">Name (optional)</label>
+        <input id="nameInput" type="text" placeholder="Your name" maxlength="40" />
+
+        <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">Okoa-friendly deal</div>
+        <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-size:13px;font-weight:700;color:#92400e"></div>
+
+        <div class="stk-status" id="stkStatus"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-green" id="modalConfirm">Create order &amp; show till</button>
+          <button type="button" class="btn btn-outline" id="modalStk" style="display:none">Pay with STK (if enabled)</button>
           <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
-          <button type="button" class="btn btn-dark" id="modalConfirm">Order + shop WA</button>
+        </div>
+      </div>
+
+      <div class="success-box" id="successBox">
+        <div style="font-weight:800;color:var(--green-dark)">Order created</div>
+        <div class="oid" id="successOid">GDS-XXXX</div>
+        <div class="payline" id="successPay">Pay Ksh XX to till XXXXXXX</div>
+        <div class="mini" id="successPhone"></div>
+        <div class="mini">Lipa na M-Pesa → Buy Goods → enter till → amount → PIN</div>
+        <div class="mini" style="margin-top:10px">Screenshot this Order ID. Delivery after payment is confirmed on our side.</div>
+        <div class="modal-actions" style="margin-top:12px">
+          <button type="button" class="btn btn-dark" id="copyOrderBtn">Copy Order ID + till details</button>
+          <button type="button" class="btn btn-outline" id="doneBtn">Done</button>
+          <a class="btn btn-wa" id="helpAfter" target="_blank" rel="noopener" style="display:none">Optional: WhatsApp help</a>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="config.js?v=gift1"></script>
-  <script src="app.js?v=gift1"></script>
+  <script src="config.js?v=till1"></script>
+  <script src="app.js?v=till1"></script>
 </body>
 </html>
