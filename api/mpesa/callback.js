@@ -1,12 +1,39 @@
 /**
  * POST /api/mpesa/callback
- * Safaricom posts STK result here.
- * AccountReference = our Order ID (GDS-XXXX)
+ * Safaricom STK result + optional Telegram notify
  */
 function json(res, status, body) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(body));
+}
+
+async function notifyTelegram(record) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const status = record.paid ? "✅ PAID" : "❌ FAILED";
+  const text = [
+    `${status} · Gamer Digital`,
+    `Order: ${record.orderId || "—"}`,
+    `Amount: Ksh ${record.amount ?? "—"}`,
+    `Receipt: ${record.mpesaReceipt || "—"}`,
+    `Phone: ${record.phone || "—"}`,
+    `Desc: ${record.resultDesc || ""}`,
+    `Time: ${record.at}`,
+  ].join("\n");
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      disable_web_page_preview: true,
+    }),
+  });
 }
 
 module.exports = async function handler(req, res) {
@@ -23,7 +50,6 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // Always acknowledge so Safaricom stops retrying
   const stk = body.Body && body.Body.stkCallback;
   if (!stk) {
     console.log("M-Pesa callback (unexpected shape)", JSON.stringify(body));
@@ -51,7 +77,6 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // AccountReference is what we sent as orderId
   const orderId = accountReference || null;
 
   const record = {
@@ -68,10 +93,16 @@ module.exports = async function handler(req, res) {
     paid: resultCode === 0,
   };
 
-  // Log for Vercel function logs — open Vercel → Deployments → Functions → Logs
   console.log("MPESA_STK_RESULT", JSON.stringify(record));
 
-  // Optional: forward to a webhook / Google Sheet / Telegram if you set MPESA_NOTIFY_URL
+  // Telegram (preferred)
+  try {
+    await notifyTelegram(record);
+  } catch (e) {
+    console.error("Telegram notify failed", e.message);
+  }
+
+  // Generic webhook
   const notify = process.env.MPESA_NOTIFY_URL;
   if (notify) {
     try {
@@ -81,7 +112,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify(record),
       });
     } catch (e) {
-      console.error("Notify failed", e.message);
+      console.error("Notify URL failed", e.message);
     }
   }
 

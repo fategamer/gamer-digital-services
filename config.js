@@ -5,21 +5,20 @@ window.BINGWA = {
   till: "6872649",
   whatsapp: "254701186627",
   tagline: "Pata Data Hata Ukiwa na Okoa",
-  subtitle: "Okoa-friendly · Gift any number · Order ID tracking · STK or Till",
+  subtitle: "Okoa-friendly · Gift any number · Airtel + Safaricom · Refer & earn",
   features: [
-    "Gift to any Safaricom number",
+    "Gift to any number (Safaricom / Airtel)",
     "Order ID for every purchase",
     "Pay via STK Push or Till",
-    "Works with Okoa (where available)",
-    "WhatsApp support after payment"
+    "Referral codes for agents",
+    "WhatsApp + Telegram paid alerts"
   ],
-  // Official-style reference prices (approx) for "You save" display — adjust if needed
-  officialHints: {
-    "250MB": 50,
-    "1GB": 99,
-    "1.5GB": 150,
-    "2.5GB": 500
-  },
+  // Your public site URL (used in referral links)
+  siteUrl: "https://gamer-digital-services.vercel.app",
+  // Default agent referral code shown on site (change anytime)
+  defaultRef: "GDS",
+  // Agent dashboard PIN (change this!)
+  agentPin: "6872",
   dataDeals: [
     { id: "d1", title: "1GB · Valid Midnight", price: 55, validity: "Midnight", note: "Once per day", badge: "HOT", okOa: true },
     { id: "d2", title: "250MB · 24hrs", price: 20, validity: "24 hrs", note: "Once per day", badge: "POPULAR", okOa: true },
@@ -48,6 +47,13 @@ window.BINGWA = {
     { id: "t3", title: "750MB · 24HRS", price: 52, validity: "24 hrs" },
     { id: "t4", title: "2GB · 24 Hours", price: 110, validity: "24 hrs", badge: "VALUE" }
   ],
+  airtelDeals: [
+    { id: "a1", title: "Airtel 1GB · Midnight", price: 45, validity: "Midnight", badge: "HOT", network: "Airtel" },
+    { id: "a2", title: "Airtel 2GB · 24hrs", price: 80, validity: "24 hrs", badge: "VALUE", network: "Airtel" },
+    { id: "a3", title: "Airtel 500MB · 24hrs", price: 25, validity: "24 hrs", network: "Airtel" },
+    { id: "a4", title: "Airtel 5GB · 7 days", price: 250, validity: "7 days", badge: "WEEKLY", network: "Airtel" },
+    { id: "a5", title: "Airtel 10GB · 30 days", price: 500, validity: "30 days", badge: "MONTHLY", network: "Airtel" }
+  ],
   faq: [
     {
       q: "How do I receive the bundle?",
@@ -58,16 +64,20 @@ window.BINGWA = {
       a: "Yes. Put their number as the delivery phone. Payment can be from your line; delivery goes to theirs."
     },
     {
+      q: "Do you sell Airtel?",
+      a: "Yes — open the Airtel tab. Delivery phone must be an Airtel line for those deals."
+    },
+    {
+      q: "What is a referral code?",
+      a: "Agents share links like ?ref=THEIRCODE. When you order, the code is attached so they can be credited."
+    },
+    {
       q: "Does it work with Okoa?",
-      a: "Many short-term deals are Okoa-friendly. Deals marked accordingly work even with outstanding Okoa where the underlying offer allows."
+      a: "Many short-term Safaricom deals are Okoa-friendly where the underlying offer allows."
     },
     {
       q: "What if payment succeeds but I get nothing?",
-      a: "Message us on WhatsApp with your Order ID and M-Pesa receipt. We resolve from the Order ID."
-    },
-    {
-      q: "Why do some deals say once per day?",
-      a: "Some network offers only allow one purchase per day per number. Choose carefully."
+      a: "Message us on WhatsApp with your Order ID and M-Pesa receipt."
     }
   ]
 };
