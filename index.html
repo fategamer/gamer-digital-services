@@ -2,10 +2,11 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Gamer Digital Services — Data · Minutes · SMS · Airtel</title>
   <meta name="description" content="Okoa-friendly data, gift a friend, referral codes. Safaricom + Airtel Kenya." />
   <meta name="theme-color" content="#00a651" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -16,8 +17,9 @@
       --white: #ffffff; --shadow: 0 10px 30px rgba(0, 80, 40, 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Inter, system-ui, sans-serif; color: var(--ink); background: #f4faf6; line-height: 1.45; }
+    body { font-family: Inter, system-ui, sans-serif; color: var(--ink); background: #f4faf6; line-height: 1.45; -webkit-tap-highlight-color: transparent; }
     a { color: inherit; text-decoration: none; }
+    button, .btn, .pill, .tab, .filter-chip, .btn-ghost { touch-action: manipulation; cursor: pointer; }
     .wrap { width: min(1100px, calc(100% - 24px)); margin: 0 auto; }
     header { background: var(--white); border-bottom: 3px solid var(--green); position: sticky; top: 0; z-index: 20; }
     .nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; gap: 12px; }
@@ -31,8 +33,8 @@
     .nav-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      border: 0; border-radius: 999px; padding: 10px 14px; font-weight: 700;
-      cursor: pointer; font-size: 13px; font-family: inherit;
+      border: 0; border-radius: 999px; padding: 12px 16px; font-weight: 700;
+      cursor: pointer; font-size: 14px; font-family: inherit; min-height: 44px;
     }
     .btn-green { background: var(--green); color: #fff; }
     .btn-dark { background: var(--ink); color: #fff; }
@@ -46,48 +48,42 @@
     .hero p { margin-top: 10px; max-width: 560px; font-size: 15px; opacity: .95; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .pill {
-      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
-      padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      cursor: pointer; font-family: inherit; color: #fff;
+      background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.5);
+      padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 800;
+      cursor: pointer; font-family: inherit; color: #fff; min-height: 44px;
     }
-    .pill:hover, .pill.on {
-      background: #fff; color: var(--green-dark); border-color: #fff;
-    }
+    .pill:active, .pill.on { background: #fff; color: var(--green-dark); border-color: #fff; }
     .ref-banner {
-      display: none; background: #fef3c7; color: #92400e; font-size: 13px; font-weight: 700;
-      text-align: center; padding: 10px 12px; margin-bottom: 12px; border-radius: 10px;
+      display: none; background: #fef3c7; color: #92400e; font-size: 14px; font-weight: 800;
+      text-align: center; padding: 12px; margin-bottom: 12px; border-radius: 10px;
       border: 2px solid #f59e0b;
     }
     .ref-banner.show { display: block; }
-    .tools {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
-    }
+    .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     @media (max-width: 640px) { .tools { grid-template-columns: 1fr; } }
     .tool-card {
-      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px;
       box-shadow: var(--shadow);
     }
-    .tool-card h3 { font-size: 13px; margin-bottom: 6px; color: var(--green-dark); }
+    .tool-card h3 { font-size: 14px; margin-bottom: 8px; color: var(--green-dark); }
     .tool-card input {
-      width: 100%; padding: 9px 10px; border: 2px solid var(--line); border-radius: 10px;
-      font-size: 14px; font-family: inherit; margin-bottom: 8px;
+      width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 10px;
+      font-size: 16px; font-family: inherit; margin-bottom: 8px;
     }
-    .tool-row { display: flex; gap: 6px; }
-    .tool-row .btn { flex: 1; padding: 8px 10px; font-size: 12px; }
-    .filter-bar {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; align-items: center;
-    }
+    .tool-row { display: flex; gap: 8px; }
+    .tool-row .btn { flex: 1; }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .filter-chip {
       border: 2px solid var(--line); background: #fff; border-radius: 999px;
-      padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit;
-      color: var(--muted);
+      padding: 10px 14px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+      color: var(--muted); min-height: 44px;
     }
     .filter-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
     .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
     .tab {
       flex: 0 0 auto; border: 2px solid var(--line); background: #fff;
-      border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 13px;
-      cursor: pointer; color: var(--muted); font-family: inherit;
+      border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 14px;
+      cursor: pointer; color: var(--muted); font-family: inherit; min-height: 44px;
     }
     .tab.active { background: var(--green); border-color: var(--green); color: #fff; }
     .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; }
@@ -97,20 +93,19 @@
       padding: 14px; box-shadow: var(--shadow);
     }
     .card h2 {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--green); color: #fff; font-size: 13px;
+      display: inline-flex; background: var(--green); color: #fff; font-size: 13px;
       padding: 5px 11px; border-radius: 999px; margin-bottom: 10px;
     }
     .section-note { color: var(--red); font-weight: 800; font-size: 12px; margin-bottom: 8px; }
     .deal {
       display: flex; justify-content: space-between; gap: 10px; align-items: center;
-      padding: 12px 0; border-bottom: 1px dashed var(--line);
+      padding: 14px 0; border-bottom: 1px dashed var(--line);
     }
     .deal:last-child { border-bottom: 0; }
-    .deal b { font-size: 14px; display: block; }
+    .deal b { font-size: 15px; display: block; }
     .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
     .chip {
-      font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px;
+      font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
       background: #eef6f1; color: var(--green-dark);
     }
     .chip.badge-HOT, .chip.badge-FLASH { background: #fee2e2; color: #b91c1c; }
@@ -122,12 +117,13 @@
     .deal-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .price {
       background: var(--green-soft); color: var(--green-dark);
-      font-weight: 900; padding: 6px 9px; border-radius: 10px; white-space: nowrap; font-size: 13px;
+      font-weight: 900; padding: 8px 10px; border-radius: 10px; white-space: nowrap; font-size: 14px;
     }
-    .btn-sm { padding: 7px 11px; font-size: 12px; }
+    .btn-sm { padding: 10px 14px; font-size: 13px; min-height: 42px; }
     .btn-ghost {
       background: transparent; border: 1px solid var(--line); color: var(--muted);
-      padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;
+      padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: inherit; min-height: 42px;
     }
     .legal { font-size: 11px; color: var(--muted); margin-top: 10px; }
     .pay { background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 14px; text-align: center; }
@@ -139,8 +135,8 @@
     }
     .steps { margin-top: 12px; text-align: left; color: var(--muted); font-size: 13px; }
     .steps li { margin: 5px 0 5px 16px; }
-    .faq details { border-bottom: 1px solid var(--line); padding: 10px 0; }
-    .faq summary { font-weight: 800; font-size: 13px; cursor: pointer; list-style: none; }
+    .faq details { border-bottom: 1px solid var(--line); padding: 12px 0; }
+    .faq summary { font-weight: 800; font-size: 14px; cursor: pointer; list-style: none; min-height: 44px; display: flex; align-items: center; }
     .faq summary::-webkit-details-marker { display: none; }
     .faq p { margin-top: 6px; font-size: 13px; color: var(--muted); }
     footer { margin-top: 24px; background: var(--green-dark); color: #fff; padding: 16px 0; }
@@ -148,41 +144,39 @@
     .wa-float {
       position: fixed; right: 14px; bottom: 14px; z-index: 30;
       background: #25D366; color: #fff; border-radius: 999px;
-      padding: 11px 14px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.2); font-size: 13px;
+      padding: 14px 16px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.2); font-size: 14px;
     }
     .toast {
-      position: fixed; left: 50%; bottom: 72px; transform: translateX(-50%);
-      background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px;
-      display: none; z-index: 50; font-size: 13px; max-width: 90%;
+      position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%);
+      background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 10px;
+      display: none; z-index: 80; font-size: 14px; max-width: 90%; font-weight: 700;
     }
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(16,34,23,.55);
       display: none; align-items: flex-end; justify-content: center;
-      z-index: 60; padding: 14px;
+      z-index: 60; padding: 14px; pointer-events: none;
     }
-    .modal-backdrop.open { display: flex; }
+    .modal-backdrop.open { display: flex; pointer-events: auto; }
     .modal {
       background: #fff; width: min(420px, 100%); border-radius: 18px;
       padding: 18px 16px; box-shadow: 0 20px 50px rgba(0,0,0,.25);
-      max-height: 92vh; overflow-y: auto;
+      max-height: 92vh; overflow-y: auto; pointer-events: auto;
     }
     .modal h3 { font-size: 17px; margin-bottom: 2px; }
-    .modal .sub { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
-    .modal label { display: block; font-size: 12px; font-weight: 800; margin: 10px 0 4px; }
+    .modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .modal label { display: block; font-size: 13px; font-weight: 800; margin: 12px 0 4px; }
     .modal input {
-      width: 100%; padding: 11px 12px; border: 2px solid var(--line);
+      width: 100%; padding: 14px 12px; border: 2px solid var(--line);
       border-radius: 12px; font-size: 16px; font-family: inherit;
     }
     .modal input:focus { outline: none; border-color: var(--green); }
-    .modal .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
-    .modal .error { color: var(--red); font-size: 12px; font-weight: 700; margin-top: 6px; display: none; }
-    .seg {
-      display: flex; gap: 6px; margin-bottom: 4px;
-    }
+    .modal .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .modal .error { color: var(--red); font-size: 13px; font-weight: 700; margin-top: 6px; display: none; }
+    .seg { display: flex; gap: 8px; margin-bottom: 4px; }
     .seg button {
       flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 12px;
-      padding: 10px 8px; font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit;
-      color: var(--muted);
+      padding: 12px 8px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit;
+      color: var(--muted); min-height: 48px;
     }
     .seg button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
     .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
@@ -190,21 +184,27 @@
     .modal-actions-row .btn { flex: 1; }
     .order-preview {
       background: var(--green-soft); border-radius: 12px; padding: 10px 12px;
-      margin-top: 10px; font-size: 12px; display: none;
+      margin-top: 10px; font-size: 13px; display: none;
     }
     .order-preview strong { color: var(--green-dark); }
     .stk-status {
-      margin-top: 8px; font-size: 12px; font-weight: 700; display: none;
-      padding: 8px 10px; border-radius: 10px; background: #f0f4f2;
+      margin-top: 8px; font-size: 13px; font-weight: 700; display: none;
+      padding: 10px; border-radius: 10px; background: #f0f4f2;
     }
     .stk-status.ok { background: var(--green-soft); color: var(--green-dark); }
     .stk-status.err { background: #fde8e8; color: var(--red); }
     .panel { display: none; }
     .panel.active { display: block; }
     .empty { padding: 16px; text-align: center; color: var(--muted); font-size: 13px; }
+    #bootError {
+      display: none; background: #fde8e8; color: #b91c1c; padding: 12px; margin: 12px auto;
+      max-width: 1100px; border-radius: 10px; font-weight: 700; font-size: 14px;
+    }
   </style>
 </head>
 <body>
+  <div id="bootError" class="wrap"></div>
+
   <header>
     <div class="wrap nav">
       <div class="brand">
@@ -223,9 +223,9 @@
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
       <p id="heroSub">Okoa filter · Gift a friend · Referral codes · STK or Till</p>
       <div class="pills">
-        <button type="button" class="pill" id="pillOkoa" title="Show only Okoa-friendly deals">Okoa-friendly</button>
-        <button type="button" class="pill" id="pillGift" title="Open gift order">Gift to friend</button>
-        <button type="button" class="pill" id="pillRef" title="Apply referral code">Referral codes</button>
+        <button type="button" class="pill" id="pillOkoa">Okoa-friendly</button>
+        <button type="button" class="pill" id="pillGift">Gift to friend</button>
+        <button type="button" class="pill" id="pillRef">Referral codes</button>
         <button type="button" class="pill" id="pillAirtel">Airtel deals</button>
       </div>
     </div>
@@ -233,7 +233,6 @@
 
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
-
     <div class="tools">
       <div class="tool-card" id="refTool">
         <h3>Referral code</h3>
@@ -242,11 +241,11 @@
           <button type="button" class="btn btn-green" id="applyRef">Apply code</button>
           <button type="button" class="btn btn-outline" id="clearRef">Clear</button>
         </div>
-        <p class="hint" id="refStatus" style="font-size:11px;color:var(--muted);margin-top:8px">No code applied yet</p>
+        <p id="refStatus" style="font-size:12px;color:var(--muted);margin-top:8px">No code applied yet</p>
       </div>
       <div class="tool-card">
         <h3>Gift a friend</h3>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Pay from your line, deliver to theirs. Tap a deal, choose <b>Gift</b>.</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Pay from your line, deliver to theirs.</p>
         <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Start gift order</button>
       </div>
     </div>
@@ -270,27 +269,24 @@
 
       <article class="card panel active" id="panel-data">
         <h2>Data Deals</h2>
-        <p class="section-note" id="dataNote">Some deals once per day · Okoa marked clearly</p>
+        <p class="section-note" id="dataNote">Tap Buy or Gift</p>
         <div id="dataDeals"></div>
       </article>
       <article class="card panel" id="panel-minutes">
         <h2>Minute Deals</h2>
-        <p class="section-note">Buy many times daily</p>
         <div id="minuteDeals"></div>
       </article>
       <article class="card panel" id="panel-sms">
         <h2>SMS Deals</h2>
-        <p class="section-note">Bulk SMS</p>
         <div id="smsDeals"></div>
       </article>
       <article class="card panel" id="panel-tunu">
         <h2>Tunukiwa Deals</h2>
-        <p class="section-note">Extra short-term packs</p>
         <div id="tunuDeals"></div>
       </article>
       <article class="card panel" id="panel-airtel">
         <h2>Airtel Deals</h2>
-        <p class="section-note">Delivery phone must be an Airtel line</p>
+        <p class="section-note">Airtel line only</p>
         <div id="airtelDeals"></div>
       </article>
       <article class="card panel faq" id="panel-faq">
@@ -304,18 +300,17 @@
         <h3>LIPA NA M-PESA</h3>
         <p style="font-size:13px;color:var(--muted)">Buy Goods Till</p>
         <div class="till" id="tillDigits"></div>
-        <button class="btn btn-dark" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
+        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
         <ol class="steps">
-          <li>Choose deal → Myself or <b>Gift</b></li>
-          <li>Enter delivery phone</li>
-          <li>Pay till <b id="tillText"></b> or STK</li>
-          <li>Keep <b>Order ID</b></li>
+          <li>Tap <b>Buy</b> or <b>Gift</b></li>
+          <li>Enter phone number</li>
+          <li>Pay till <b id="tillText"></b></li>
+          <li>Keep your <b>Order ID</b></li>
         </ol>
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Why us</h2>
         <ul id="whyList" style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)"></ul>
-        <p class="legal">Independent reseller. Not Safaricom / Airtel.</p>
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
@@ -327,18 +322,18 @@
 
   <footer>
     <div class="wrap foot">
-      <div>Gamer Digital Services · Gamer Innovation Network</div>
+      <div>Gamer Digital Services</div>
       <div id="footPhone"></div>
     </div>
   </footer>
 
   <a class="wa-float" id="waFloat" target="_blank" rel="noopener">WhatsApp</a>
-  <div class="toast" id="toast">Copied</div>
+  <div class="toast" id="toast">OK</div>
 
-  <div class="modal-backdrop" id="orderModal" role="dialog" aria-modal="true">
-    <div class="modal">
+  <div class="modal-backdrop" id="orderModal">
+    <div class="modal" onclick="event.stopPropagation()">
       <h3 id="modalTitle">Complete order</h3>
-      <p class="sub" id="modalSub">Choose who receives the deal</p>
+      <p class="sub" id="modalSub">Who receives the deal?</p>
 
       <label>Who is this for?</label>
       <div class="seg">
@@ -346,19 +341,18 @@
         <button type="button" id="modeGift">Gift a friend</button>
       </div>
 
-      <label for="phoneInput" id="phoneLabel">Your phone (receives deal) *</label>
+      <label for="phoneInput" id="phoneLabel">Phone (receives deal) *</label>
       <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
-      <p class="hint" id="phoneHint">Bundle is loaded on this number.</p>
+      <p class="hint" id="phoneHint">Bundle loads on this number.</p>
       <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
 
-      <label for="nameInput" id="nameLabel">Your name (optional)</label>
+      <label for="nameInput" id="nameLabel">Name (optional)</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
 
-      <div id="okoaNote" style="display:none;margin-top:10px;padding:8px 10px;background:#d1fae5;border-radius:10px;font-size:12px;font-weight:700;color:#065f46">
-        Okoa-friendly deal — can work even with Okoa balance where the network offer allows.
+      <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">
+        Okoa-friendly deal
       </div>
-
-      <div id="refNote" style="display:none;margin-top:8px;padding:8px 10px;background:#fef3c7;border-radius:10px;font-size:12px;font-weight:700;color:#92400e"></div>
+      <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-size:13px;font-weight:700;color:#92400e"></div>
 
       <div class="order-preview" id="orderPreview"></div>
       <div class="stk-status" id="stkStatus"></div>
@@ -373,7 +367,7 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <script src="config.js?v=20260928b"></script>
+  <script src="app.js?v=20260928b"></script>
 </body>
 </html>
