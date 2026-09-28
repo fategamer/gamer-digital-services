@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gamer Digital Services — Data · Minutes · SMS · Airtel</title>
-  <meta name="description" content="Affordable data, minutes and SMS in Kenya. Safaricom + Airtel. Gift any number. Order ID. STK or Till. Referral agents." />
+  <meta name="description" content="Okoa-friendly data, gift a friend, referral codes. Safaricom + Airtel Kenya." />
   <meta name="theme-color" content="#00a651" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,29 +40,49 @@
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .hero {
       background: linear-gradient(125deg, #00a651 0%, #006b36 55%, #0a3d24 100%);
-      color: #fff; padding: 36px 0 28px; margin-bottom: 18px;
+      color: #fff; padding: 36px 0 28px; margin-bottom: 14px;
     }
     .hero h1 { font-size: clamp(26px, 5.5vw, 46px); line-height: 1.08; text-transform: uppercase; letter-spacing: -.4px; }
     .hero p { margin-top: 10px; max-width: 560px; font-size: 15px; opacity: .95; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .pill {
       background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
-      padding: 6px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: inherit; color: #fff;
+    }
+    .pill:hover, .pill.on {
+      background: #fff; color: var(--green-dark); border-color: #fff;
     }
     .ref-banner {
       display: none; background: #fef3c7; color: #92400e; font-size: 13px; font-weight: 700;
-      text-align: center; padding: 8px 12px; margin-bottom: 12px; border-radius: 10px;
+      text-align: center; padding: 10px 12px; margin-bottom: 12px; border-radius: 10px;
+      border: 2px solid #f59e0b;
     }
     .ref-banner.show { display: block; }
-    .trust {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px; margin: -8px auto 18px;
+    .tools {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
     }
-    .trust-item {
-      background: #fff; border: 1px solid var(--line); border-radius: 14px;
-      padding: 12px; text-align: center; box-shadow: var(--shadow); font-size: 12px; font-weight: 700;
+    @media (max-width: 640px) { .tools { grid-template-columns: 1fr; } }
+    .tool-card {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+      box-shadow: var(--shadow);
     }
-    .trust-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    .tool-card h3 { font-size: 13px; margin-bottom: 6px; color: var(--green-dark); }
+    .tool-card input {
+      width: 100%; padding: 9px 10px; border: 2px solid var(--line); border-radius: 10px;
+      font-size: 14px; font-family: inherit; margin-bottom: 8px;
+    }
+    .tool-row { display: flex; gap: 6px; }
+    .tool-row .btn { flex: 1; padding: 8px 10px; font-size: 12px; }
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; align-items: center;
+    }
+    .filter-chip {
+      border: 2px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit;
+      color: var(--muted);
+    }
+    .filter-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
     .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
     .tab {
       flex: 0 0 auto; border: 2px solid var(--line); background: #fff;
@@ -97,6 +117,7 @@
     .chip.badge-POPULAR, .chip.badge-VALUE { background: #fef3c7; color: #b45309; }
     .chip.badge-MONTHLY, .chip.badge-COMBO, .chip.badge-WEEKLY { background: #e0e7ff; color: #3730a3; }
     .chip.airtel { background: #fce7f3; color: #9d174d; }
+    .chip.okoa { background: #d1fae5; color: #065f46; }
     .chip.warn { background: #fff7ed; color: #c2410c; }
     .deal-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .price {
@@ -155,6 +176,15 @@
     .modal input:focus { outline: none; border-color: var(--green); }
     .modal .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .modal .error { color: var(--red); font-size: 12px; font-weight: 700; margin-top: 6px; display: none; }
+    .seg {
+      display: flex; gap: 6px; margin-bottom: 4px;
+    }
+    .seg button {
+      flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 12px;
+      padding: 10px 8px; font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit;
+      color: var(--muted);
+    }
+    .seg button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
     .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
     .modal-actions-row { display: flex; gap: 8px; }
     .modal-actions-row .btn { flex: 1; }
@@ -171,6 +201,7 @@
     .stk-status.err { background: #fde8e8; color: var(--red); }
     .panel { display: none; }
     .panel.active { display: block; }
+    .empty { padding: 16px; text-align: center; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
@@ -190,25 +221,35 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Gift any number · Airtel + Safaricom · Refer &amp; earn · STK or Till</p>
+      <p id="heroSub">Okoa filter · Gift a friend · Referral codes · STK or Till</p>
       <div class="pills">
-        <span class="pill">Okoa-friendly</span>
-        <span class="pill">Gift to friend</span>
-        <span class="pill">Airtel deals</span>
-        <span class="pill">Referral codes</span>
+        <button type="button" class="pill" id="pillOkoa" title="Show only Okoa-friendly deals">Okoa-friendly</button>
+        <button type="button" class="pill" id="pillGift" title="Open gift order">Gift to friend</button>
+        <button type="button" class="pill" id="pillRef" title="Apply referral code">Referral codes</button>
+        <button type="button" class="pill" id="pillAirtel">Airtel deals</button>
       </div>
     </div>
   </section>
 
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
-  </div>
 
-  <div class="wrap trust">
-    <div class="trust-item"><span>📱</span>Gift any number</div>
-    <div class="trust-item"><span>🧾</span>Order ID</div>
-    <div class="trust-item"><span>📶</span>Safaricom + Airtel</div>
-    <div class="trust-item"><span>🤝</span>Agent referrals</div>
+    <div class="tools">
+      <div class="tool-card" id="refTool">
+        <h3>Referral code</h3>
+        <input id="refInput" type="text" placeholder="e.g. JANE01" maxlength="16" autocomplete="off" />
+        <div class="tool-row">
+          <button type="button" class="btn btn-green" id="applyRef">Apply code</button>
+          <button type="button" class="btn btn-outline" id="clearRef">Clear</button>
+        </div>
+        <p class="hint" id="refStatus" style="font-size:11px;color:var(--muted);margin-top:8px">No code applied yet</p>
+      </div>
+      <div class="tool-card">
+        <h3>Gift a friend</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Pay from your line, deliver to theirs. Tap a deal, choose <b>Gift</b>.</p>
+        <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Start gift order</button>
+      </div>
+    </div>
   </div>
 
   <main class="wrap grid" id="deals">
@@ -222,14 +263,19 @@
         <button type="button" class="tab" data-tab="faq">FAQ</button>
       </div>
 
+      <div class="filter-bar" id="dataFilters">
+        <button type="button" class="filter-chip on" data-filter="all">All data</button>
+        <button type="button" class="filter-chip" data-filter="okoa">Okoa only</button>
+      </div>
+
       <article class="card panel active" id="panel-data">
         <h2>Data Deals</h2>
-        <p class="section-note">Some deals once per day · Gift any Safaricom number</p>
+        <p class="section-note" id="dataNote">Some deals once per day · Okoa marked clearly</p>
         <div id="dataDeals"></div>
       </article>
       <article class="card panel" id="panel-minutes">
         <h2>Minute Deals</h2>
-        <p class="section-note">Many can be bought multiple times daily</p>
+        <p class="section-note">Buy many times daily</p>
         <div id="minuteDeals"></div>
       </article>
       <article class="card panel" id="panel-sms">
@@ -260,20 +306,19 @@
         <div class="till" id="tillDigits"></div>
         <button class="btn btn-dark" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
         <ol class="steps">
-          <li>Buy → enter <b>delivery phone</b></li>
-          <li>Pay <b>STK</b> or till <b id="tillText"></b></li>
+          <li>Choose deal → Myself or <b>Gift</b></li>
+          <li>Enter delivery phone</li>
+          <li>Pay till <b id="tillText"></b> or STK</li>
           <li>Keep <b>Order ID</b></li>
-          <li>We deliver after confirmation</li>
         </ol>
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Why us</h2>
         <ul id="whyList" style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)"></ul>
-        <p class="legal">Independent reseller. Not Safaricom / Airtel. Network rules apply.</p>
+        <p class="legal">Independent reseller. Not Safaricom / Airtel.</p>
       </div>
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
-        <p style="margin-bottom:10px;font-size:13px;color:var(--muted)">Order ID + M-Pesa receipt if delayed.</p>
         <a class="btn btn-green" id="waSide" target="_blank" rel="noopener" style="width:100%">Chat on WhatsApp</a>
         <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent dashboard</a>
       </div>
@@ -293,15 +338,31 @@
   <div class="modal-backdrop" id="orderModal" role="dialog" aria-modal="true">
     <div class="modal">
       <h3 id="modalTitle">Complete order</h3>
-      <p class="sub" id="modalSub">Who should receive this deal?</p>
-      <label for="phoneInput">Delivery phone (gift OK) *</label>
+      <p class="sub" id="modalSub">Choose who receives the deal</p>
+
+      <label>Who is this for?</label>
+      <div class="seg">
+        <button type="button" class="on" id="modeSelf">Myself</button>
+        <button type="button" id="modeGift">Gift a friend</button>
+      </div>
+
+      <label for="phoneInput" id="phoneLabel">Your phone (receives deal) *</label>
       <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
-      <p class="hint">Can differ from payer. Airtel deals → Airtel line.</p>
+      <p class="hint" id="phoneHint">Bundle is loaded on this number.</p>
       <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
-      <label for="nameInput">Your name (optional)</label>
+
+      <label for="nameInput" id="nameLabel">Your name (optional)</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
+
+      <div id="okoaNote" style="display:none;margin-top:10px;padding:8px 10px;background:#d1fae5;border-radius:10px;font-size:12px;font-weight:700;color:#065f46">
+        Okoa-friendly deal — can work even with Okoa balance where the network offer allows.
+      </div>
+
+      <div id="refNote" style="display:none;margin-top:8px;padding:8px 10px;background:#fef3c7;border-radius:10px;font-size:12px;font-weight:700;color:#92400e"></div>
+
       <div class="order-preview" id="orderPreview"></div>
       <div class="stk-status" id="stkStatus"></div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-green" id="modalStk" style="display:none">Pay with M-Pesa (STK)</button>
         <div class="modal-actions-row">
