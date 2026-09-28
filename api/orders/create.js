@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
   const name = String(body.name || "").slice(0, 40);
   const ref = String(body.ref || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
   const network = String(body.network || "Safaricom").slice(0, 20);
-  const payMethod = String(body.payMethod || "pending").slice(0, 20);
+  const payMethod = String(body.payMethod || "till").slice(0, 20);
   const gift = !!body.gift;
   const okoa = !!body.okoa;
 
@@ -57,7 +57,8 @@ module.exports = async function handler(req, res) {
     payMethod,
     gift,
     okoa,
-    status: "pending_payment",
+    giftStatus: gift ? "pending_accept" : null,
+    status: gift ? "pending_accept" : "pending_payment",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     mpesaReceipt: null,
@@ -68,30 +69,32 @@ module.exports = async function handler(req, res) {
   await saveOrder(order);
   console.log("ORDER_CREATED", JSON.stringify(order));
 
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const giftLink = gift ? `${proto}://${host}/gift.html?id=${orderId}` : null;
+
   const lines = [
-    gift ? "🎁 GIFT ORDER" : "🛒 NEW ORDER",
+    gift ? "🎁 GIFT INVITE (waiting accept)" : "🛒 NEW ORDER",
     `ID: ${orderId}`,
     `Deal: ${title}`,
     `Amount: Ksh ${amount}`,
     `${gift ? "Gift to" : "Deliver to"}: ${phone}`,
     name ? `Name: ${name}` : null,
     ref ? `Ref: ${ref}` : null,
-    okoa ? "Okoa: yes" : null,
-    `Network: ${network}`,
-    `Pay: ${payMethod}`,
+    giftLink ? `Friend link: ${giftLink}` : null,
+    `Pay: till / ${payMethod}`,
   ].filter(Boolean);
 
   try {
     await notifyTelegram(lines.join("\n"));
-  } catch (e) {
-    console.error("Telegram", e.message);
-  }
+  } catch (e) {}
 
   return json(res, 200, {
     ok: true,
     orderId,
     order,
     till: process.env.PUBLIC_TILL || "6872649",
+    giftLink,
     persistence: storageMode(),
   });
 };

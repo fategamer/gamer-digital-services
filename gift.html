@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gift invite — Accept or Decline</title>
+  <meta name="theme-color" content="#00a651" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #00a651; --green-dark: #007a3d; --ink: #102217; --muted: #4b5c52; --line: #d7eadf; --red: #e10600;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif; background: #f4faf6; color: var(--ink);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .card {
+      background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 24px;
+      max-width: 400px; width: 100%; box-shadow: 0 12px 40px rgba(0,80,40,.1); text-align: center;
+    }
+    .mark {
+      width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 12px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 20px;
+    }
+    h1 { font-size: 20px; margin-bottom: 6px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
+    .deal {
+      background: #e8f8ef; border-radius: 14px; padding: 14px; margin-bottom: 16px; text-align: left;
+    }
+    .deal b { display: block; font-size: 16px; margin-bottom: 4px; }
+    .deal span { font-size: 13px; color: var(--muted); }
+    .price { font-size: 22px; font-weight: 900; color: var(--green-dark); margin-top: 8px; }
+    .btn {
+      display: block; width: 100%; border: 0; border-radius: 999px; padding: 14px;
+      font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 10px; min-height: 48px;
+    }
+    .btn-yes { background: var(--green); color: #fff; }
+    .btn-no { background: #fff; color: var(--red); border: 2px solid #fecaca; }
+    .btn:disabled { opacity: 0.55; }
+    .msg { margin-top: 14px; font-weight: 700; font-size: 14px; display: none; }
+    .msg.show { display: block; }
+    .msg.ok { color: var(--green-dark); }
+    .msg.err { color: var(--red); }
+    .loading { color: var(--muted); font-size: 14px; }
+    a.home { display: inline-block; margin-top: 16px; color: var(--green-dark); font-weight: 700; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark">G</div>
+    <h1>Gift invite</h1>
+    <p class="sub" id="sub">Loading…</p>
+    <div class="deal" id="dealBox" style="display:none">
+      <b id="dealTitle">—</b>
+      <span id="dealMeta">—</span>
+      <div class="price" id="dealPrice"></div>
+    </div>
+    <div id="actions" style="display:none">
+      <button type="button" class="btn btn-yes" id="btnAccept">Accept gift</button>
+      <button type="button" class="btn btn-no" id="btnDecline">Decline</button>
+    </div>
+    <p class="msg" id="msg"></p>
+    <a class="home" href="/">← Back to shop</a>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var orderId = params.get("id") || params.get("orderId") || "";
+      var sub = document.getElementById("sub");
+      var dealBox = document.getElementById("dealBox");
+      var actions = document.getElementById("actions");
+      var msg = document.getElementById("msg");
+
+      if (!orderId) {
+        sub.textContent = "Invalid gift link.";
+        return;
+      }
+
+      function showMsg(text, ok) {
+        msg.textContent = text;
+        msg.className = "msg show " + (ok ? "ok" : "err");
+      }
+
+      function respond(action) {
+        document.getElementById("btnAccept").disabled = true;
+        document.getElementById("btnDecline").disabled = true;
+        fetch("/api/orders/gift-respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: orderId, action: action }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (d) {
+            if (!d.ok) throw new Error(d.error || "Failed");
+            actions.style.display = "none";
+            if (action === "accept") {
+              showMsg("You accepted. The sender can pay the till and the bundle can be delivered to your number.", true);
+              sub.textContent = "Gift accepted ✓";
+            } else {
+              showMsg("You declined this gift. No problem.", false);
+              sub.textContent = "Gift declined";
+            }
+          })
+          .catch(function (e) {
+            showMsg(e.message || "Error", false);
+            document.getElementById("btnAccept").disabled = false;
+            document.getElementById("btnDecline").disabled = false;
+          });
+      }
+
+      document.getElementById("btnAccept").onclick = function () {
+        respond("accept");
+      };
+      document.getElementById("btnDecline").onclick = function () {
+        respond("decline");
+      };
+
+      fetch("/api/orders/gift-respond?orderId=" + encodeURIComponent(orderId))
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (d) {
+          if (!d.ok || !d.order) throw new Error(d.error || "Gift not found");
+          var o = d.order;
+          document.getElementById("dealTitle").textContent = o.title || "Data deal";
+          document.getElementById("dealMeta").textContent =
+            "For number: " + (o.phone || "—") + (o.name ? " · From: " + o.name : "");
+          document.getElementById("dealPrice").textContent =
+            o.amount != null ? "Value: Ksh " + o.amount : "";
+          dealBox.style.display = "block";
+
+          if (o.giftStatus === "accepted") {
+            sub.textContent = "Already accepted";
+            showMsg("You already accepted this gift.", true);
+            return;
+          }
+          if (o.giftStatus === "declined") {
+            sub.textContent = "Already declined";
+            showMsg("This gift was declined.", false);
+            return;
+          }
+
+          sub.textContent =
+            (o.name ? o.name + " wants" : "Someone wants") +
+            " to gift you this deal. Accept or decline below.";
+          actions.style.display = "block";
+        })
+        .catch(function (e) {
+          sub.textContent = e.message || "Could not load gift";
+        });
+    })();
+  </script>
+</body>
+</html>
