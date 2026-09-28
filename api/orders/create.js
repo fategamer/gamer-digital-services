@@ -6,6 +6,7 @@ const {
   isValidKenyaPhone,
   storageMode,
 } = require("../_lib/store");
+const { hasSms, sendSms, giftSmsText } = require("../_lib/sms");
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -39,12 +40,17 @@ module.exports = async function handler(req, res) {
   const payMethod = String(body.payMethod || "till").slice(0, 20);
   const gift = !!body.gift;
   const okoa = !!body.okoa;
+  const sendPrompt = body.sendPrompt !== false; // default true for gifts
 
   if (!isValidKenyaPhone(phone)) return json(res, 400, { error: "Invalid delivery phone" });
   if (!amount || amount < 1) return json(res, 400, { error: "Invalid amount" });
 
   const orderId =
     body.orderId && /^GDS-[A-Z0-9]{4}$/.test(body.orderId) ? body.orderId : makeOrderId();
+
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const giftLink = gift ? `${proto}://${host}/gift.html?id=${orderId}` : null;
 
   const order = {
     orderId,
@@ -59,6 +65,8 @@ module.exports = async function handler(req, res) {
     okoa,
     giftStatus: gift ? "pending_accept" : null,
     status: gift ? "pending_accept" : "pending_payment",
+    giftLink,
+    promptSent: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     mpesaReceipt: null,
@@ -66,23 +74,38 @@ module.exports = async function handler(req, res) {
     deliveredAt: null,
   };
 
-  await saveOrder(order);
-  console.log("ORDER_CREATED", JSON.stringify(order));
+  let smsResult = null;
+  if (gift && sendPrompt && giftLink) {
+    const msg = giftSmsText({
+      name: name || "Someone",
+      title,
+      amount,
+      giftLink,
+    });
+    try {
+      smsResult = await sendSms(phone, msg);
+      order.promptSent = !!(smsResult && smsResult.ok);
+      order.promptChannel = order.promptSent ? "sms" : hasSms() ? "sms_failed" : "not_configured";
+    } catch (e) {
+      console.error("SMS", e.message);
+      smsResult = { ok: false, error: e.message };
+      order.promptChannel = "sms_error";
+    }
+  }
 
-  const host = req.headers["x-forwarded-host"] || req.headers.host;
-  const proto = req.headers["x-forwarded-proto"] || "https";
-  const giftLink = gift ? `${proto}://${host}/gift.html?id=${orderId}` : null;
+  await saveOrder(order);
+  console.log("ORDER_CREATED", JSON.stringify({ orderId, gift, promptSent: order.promptSent }));
 
   const lines = [
-    gift ? "🎁 GIFT INVITE (waiting accept)" : "🛒 NEW ORDER",
+    gift ? "🎁 GIFT INVITE" : "🛒 NEW ORDER",
     `ID: ${orderId}`,
     `Deal: ${title}`,
     `Amount: Ksh ${amount}`,
     `${gift ? "Gift to" : "Deliver to"}: ${phone}`,
-    name ? `Name: ${name}` : null,
-    ref ? `Ref: ${ref}` : null,
-    giftLink ? `Friend link: ${giftLink}` : null,
-    `Pay: till / ${payMethod}`,
+    name ? `From: ${name}` : null,
+    gift && order.promptSent ? "SMS prompt: SENT to friend" : null,
+    gift && !order.promptSent ? "SMS prompt: not sent (check AT keys)" : null,
+    giftLink ? `Link: ${giftLink}` : null,
   ].filter(Boolean);
 
   try {
@@ -95,6 +118,12 @@ module.exports = async function handler(req, res) {
     order,
     till: process.env.PUBLIC_TILL || "6872649",
     giftLink,
+    promptSent: !!order.promptSent,
+    promptChannel: order.promptChannel || null,
+    sms: smsResult
+      ? { ok: smsResult.ok, error: smsResult.error || null, status: smsResult.status || null }
+      : null,
+    smsConfigured: hasSms(),
     persistence: storageMode(),
   });
 };
