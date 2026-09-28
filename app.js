@@ -2,6 +2,22 @@
   const C = window.BINGWA;
   if (!C) return;
 
+  // Referral from URL ?ref=CODE
+  const params = new URLSearchParams(location.search);
+  let refCode = (params.get("ref") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
+  if (refCode) {
+    try { localStorage.setItem("gds_ref", refCode); } catch (e) {}
+  } else {
+    try { refCode = localStorage.getItem("gds_ref") || ""; } catch (e) {}
+  }
+  if (refCode) {
+    const banner = document.getElementById("refBanner");
+    if (banner) {
+      banner.textContent = "Referred by " + refCode + " — thanks for supporting our agents";
+      banner.classList.add("show");
+    }
+  }
+
   const generalWa = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(
     "Habari, niko na swali kuhusu Gamer Digital Services."
   )}`;
@@ -12,7 +28,10 @@
 
   document.getElementById("footPhone").textContent = "+" + C.whatsapp;
   document.getElementById("tillText").textContent = C.till;
-  if (C.subtitle) document.getElementById("heroSub").textContent = C.subtitle;
+  if (C.subtitle) {
+    const hs = document.getElementById("heroSub");
+    if (hs) hs.textContent = C.subtitle;
+  }
 
   const why = document.getElementById("whyList");
   (C.features || []).forEach((f) => {
@@ -29,7 +48,6 @@
     digits.appendChild(span);
   });
 
-  // Tabs
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
@@ -58,21 +76,28 @@
     return /^0[17]\d{8}$/.test(p);
   }
 
+  function saveLocalOrder(o) {
+    try {
+      const list = JSON.parse(localStorage.getItem("gds_orders") || "[]");
+      list.unshift(o);
+      localStorage.setItem("gds_orders", JSON.stringify(list.slice(0, 100)));
+    } catch (e) {}
+  }
+
   function shareDeal(item) {
     const text =
       `🔥 ${item.title} — Ksh ${item.price}` +
       (item.validity ? ` (${item.validity})` : "") +
-      `\nGamer Digital Services\nTill ${C.till}\nWhatsApp: https://wa.me/${C.whatsapp}`;
+      `\nGamer Digital Services\nTill ${C.till}\n` +
+      (C.siteUrl || location.origin) +
+      (refCode ? "/?ref=" + refCode : "");
     if (navigator.share) {
-      navigator.share({ title: C.brand, text }).catch(() => copyShare(text));
+      navigator.share({ title: C.brand, text }).catch(() => {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+      });
     } else {
-      copyShare(text);
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
     }
-  }
-
-  function copyShare(text) {
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank", "noopener");
   }
 
   let currentDeal = null;
@@ -92,7 +117,11 @@
     currentDeal = item;
     lastOrderId = null;
     modalTitle.textContent = item.title;
-    modalSub.textContent = `Ksh ${item.price}` + (item.validity ? ` · ${item.validity}` : "") + " · Who receives it?";
+    modalSub.textContent =
+      `Ksh ${item.price}` +
+      (item.validity ? ` · ${item.validity}` : "") +
+      (item.network ? ` · ${item.network}` : "") +
+      " · Who receives it?";
     phoneInput.value = "";
     nameInput.value = "";
     phoneError.style.display = "none";
@@ -133,26 +162,38 @@
       phone,
       name: (nameInput.value || "").trim(),
       orderId: lastOrderId || makeOrderId(),
+      ref: refCode || "",
     };
   }
 
-  function showPreview(orderId, phone, amount) {
+  function showPreview(orderId, phone, amount, ref) {
     lastOrderId = orderId;
-    orderPreview.innerHTML = `<strong>Order ID: ${orderId}</strong><br>Delivery to: ${phone}<br>Amount: Ksh ${amount}`;
+    orderPreview.innerHTML =
+      `<strong>Order ID: ${orderId}</strong><br>Delivery to: ${phone}<br>Amount: Ksh ${amount}` +
+      (ref ? `<br>Ref: ${ref}` : "");
     orderPreview.style.display = "block";
   }
 
   btnWa.addEventListener("click", () => {
     const v = validate();
     if (!v) return;
-    showPreview(v.orderId, v.phone, currentDeal.price);
+    showPreview(v.orderId, v.phone, currentDeal.price, v.ref);
+    saveLocalOrder({
+      orderId: v.orderId,
+      title: currentDeal.title,
+      phone: v.phone,
+      price: currentDeal.price,
+      ref: v.ref,
+      at: new Date().toISOString(),
+    });
     const lines = [
       `Habari, nataka order ${v.orderId}`,
       `Deal: ${currentDeal.title}`,
       `Bei: Ksh ${currentDeal.price}`,
-      `Nambari ya kupokea (gift): ${v.phone}`,
+      `Nambari ya kupokea: ${v.phone}`,
     ];
     if (v.name) lines.push(`Jina: ${v.name}`);
+    if (v.ref) lines.push(`Ref: ${v.ref}`);
     lines.push(`Nitalipa till ${C.till} kisha nitapeleka M-Pesa SMS.`);
     lines.push(`Deliver kwa ${v.phone} baada ya confirmation.`);
     const url = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
@@ -167,7 +208,15 @@
     btnStk.addEventListener("click", async () => {
       const v = validate();
       if (!v) return;
-      showPreview(v.orderId, v.phone, currentDeal.price);
+      showPreview(v.orderId, v.phone, currentDeal.price, v.ref);
+      saveLocalOrder({
+        orderId: v.orderId,
+        title: currentDeal.title,
+        phone: v.phone,
+        price: currentDeal.price,
+        ref: v.ref,
+        at: new Date().toISOString(),
+      });
       btnStk.disabled = true;
       btnWa.disabled = true;
       if (stkStatus) {
@@ -185,21 +234,20 @@
             orderId: v.orderId,
             dealTitle: currentDeal.title,
             deliveryPhone: v.phone,
+            ref: v.ref,
           }),
         });
         const data = await res.json();
         if (data.ok) {
           if (stkStatus) {
-            stkStatus.textContent =
-              "Prompt sent! Enter PIN on phone. Order: " + v.orderId;
+            stkStatus.textContent = "Prompt sent! Enter PIN. Order: " + v.orderId;
             stkStatus.className = "stk-status ok";
           }
           showToast("Check phone — enter M-Pesa PIN");
           setTimeout(closeModal, 3200);
         } else {
           if (stkStatus) {
-            stkStatus.textContent =
-              (data.error || "STK unavailable") + " — use Till + WhatsApp";
+            stkStatus.textContent = (data.error || "STK unavailable") + " — use Till + WhatsApp";
             stkStatus.className = "stk-status err";
           }
           btnStk.disabled = false;
@@ -222,6 +270,7 @@
     root.innerHTML = "";
     (list || []).forEach((item) => {
       const chips = [];
+      if (item.network) chips.push(`<span class="chip airtel">${item.network}</span>`);
       if (item.badge) chips.push(`<span class="chip badge-${item.badge}">${item.badge}</span>`);
       if (item.validity) chips.push(`<span class="chip">${item.validity}</span>`);
       if (item.okOa) chips.push(`<span class="chip">Okoa OK</span>`);
@@ -234,11 +283,10 @@
         <div>
           <b>${item.title}</b>
           <div class="meta">${chips.join("")}</div>
-          ${item.note && !/once|unavailable/i.test(item.note) ? `<small>${item.note}</small>` : ""}
         </div>
         <div class="deal-actions">
           <div class="price">Ksh ${item.price}</div>
-          <button type="button" class="btn-ghost share-btn" title="Share">Share</button>
+          <button type="button" class="btn-ghost share-btn">Share</button>
           <button type="button" class="btn btn-green btn-sm buy-btn">Buy</button>
         </div>
       `;
@@ -252,6 +300,7 @@
   render(C.minuteDeals, "minuteDeals");
   render(C.smsDeals, "smsDeals");
   render(C.tunuDeals, "tunuDeals");
+  render(C.airtelDeals, "airtelDeals");
 
   const faqRoot = document.getElementById("faqList");
   (C.faq || []).forEach((item) => {

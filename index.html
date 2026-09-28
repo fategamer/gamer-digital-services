@@ -3,44 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gamer Digital Services — Data · Minutes · SMS | Gift any number</title>
-  <meta name="description" content="Affordable Safaricom-style data, minutes and SMS in Kenya. Gift any number. Order ID tracking. STK or Till. Okoa-friendly deals. Independent shop." />
+  <title>Gamer Digital Services — Data · Minutes · SMS · Airtel</title>
+  <meta name="description" content="Affordable data, minutes and SMS in Kenya. Safaricom + Airtel. Gift any number. Order ID. STK or Till. Referral agents." />
   <meta name="theme-color" content="#00a651" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --green: #00a651;
-      --green-dark: #007a3d;
-      --green-soft: #e8f8ef;
-      --red: #e10600;
-      --ink: #102217;
-      --muted: #4b5c52;
-      --line: #d7eadf;
-      --white: #ffffff;
-      --shadow: 0 10px 30px rgba(0, 80, 40, 0.08);
-      --amber: #f59e0b;
+      --green: #00a651; --green-dark: #007a3d; --green-soft: #e8f8ef;
+      --red: #e10600; --ink: #102217; --muted: #4b5c52; --line: #d7eadf;
+      --white: #ffffff; --shadow: 0 10px 30px rgba(0, 80, 40, 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--ink);
-      background: #f4faf6;
-      line-height: 1.45;
-    }
+    body { font-family: Inter, system-ui, sans-serif; color: var(--ink); background: #f4faf6; line-height: 1.45; }
     a { color: inherit; text-decoration: none; }
     .wrap { width: min(1100px, calc(100% - 24px)); margin: 0 auto; }
-    header {
-      background: var(--white);
-      border-bottom: 3px solid var(--green);
-      position: sticky; top: 0; z-index: 20;
-    }
-    .nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 0; gap: 12px;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: .2px; }
+    header { background: var(--white); border-bottom: 3px solid var(--green); position: sticky; top: 0; z-index: 20; }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
     .mark {
       width: 42px; height: 42px; border-radius: 50%;
       background: linear-gradient(135deg, var(--green), var(--green-dark));
@@ -61,16 +42,18 @@
       background: linear-gradient(125deg, #00a651 0%, #006b36 55%, #0a3d24 100%);
       color: #fff; padding: 36px 0 28px; margin-bottom: 18px;
     }
-    .hero h1 {
-      font-size: clamp(26px, 5.5vw, 46px); line-height: 1.08;
-      text-transform: uppercase; letter-spacing: -.4px;
-    }
+    .hero h1 { font-size: clamp(26px, 5.5vw, 46px); line-height: 1.08; text-transform: uppercase; letter-spacing: -.4px; }
     .hero p { margin-top: 10px; max-width: 560px; font-size: 15px; opacity: .95; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .pill {
       background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
       padding: 6px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
     }
+    .ref-banner {
+      display: none; background: #fef3c7; color: #92400e; font-size: 13px; font-weight: 700;
+      text-align: center; padding: 8px 12px; margin-bottom: 12px; border-radius: 10px;
+    }
+    .ref-banner.show { display: block; }
     .trust {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 10px; margin: -8px auto 18px;
@@ -80,18 +63,13 @@
       padding: 12px; text-align: center; box-shadow: var(--shadow); font-size: 12px; font-weight: 700;
     }
     .trust-item span { display: block; font-size: 20px; margin-bottom: 4px; }
-    .tabs {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;
-      -webkit-overflow-scrolling: touch;
-    }
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
     .tab {
       flex: 0 0 auto; border: 2px solid var(--line); background: #fff;
       border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 13px;
       cursor: pointer; color: var(--muted); font-family: inherit;
     }
-    .tab.active {
-      background: var(--green); border-color: var(--green); color: #fff;
-    }
+    .tab.active { background: var(--green); border-color: var(--green); color: #fff; }
     .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     .card {
@@ -117,9 +95,9 @@
     }
     .chip.badge-HOT, .chip.badge-FLASH { background: #fee2e2; color: #b91c1c; }
     .chip.badge-POPULAR, .chip.badge-VALUE { background: #fef3c7; color: #b45309; }
-    .chip.badge-MONTHLY, .chip.badge-COMBO { background: #e0e7ff; color: #3730a3; }
+    .chip.badge-MONTHLY, .chip.badge-COMBO, .chip.badge-WEEKLY { background: #e0e7ff; color: #3730a3; }
+    .chip.airtel { background: #fce7f3; color: #9d174d; }
     .chip.warn { background: #fff7ed; color: #c2410c; }
-    .deal small { display: block; color: var(--muted); font-weight: 600; font-size: 11px; margin-top: 2px; }
     .deal-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .price {
       background: var(--green-soft); color: var(--green-dark);
@@ -131,10 +109,7 @@
       padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;
     }
     .legal { font-size: 11px; color: var(--muted); margin-top: 10px; }
-    .pay {
-      background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 14px;
-      text-align: center;
-    }
+    .pay { background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 14px; text-align: center; }
     .pay h3 { color: var(--green-dark); font-size: 16px; margin-bottom: 6px; }
     .till { display: flex; justify-content: center; gap: 5px; margin: 10px 0; flex-wrap: wrap; }
     .digit {
@@ -143,12 +118,8 @@
     }
     .steps { margin-top: 12px; text-align: left; color: var(--muted); font-size: 13px; }
     .steps li { margin: 5px 0 5px 16px; }
-    .faq details {
-      border-bottom: 1px solid var(--line); padding: 10px 0;
-    }
-    .faq summary {
-      font-weight: 800; font-size: 13px; cursor: pointer; list-style: none;
-    }
+    .faq details { border-bottom: 1px solid var(--line); padding: 10px 0; }
+    .faq summary { font-weight: 800; font-size: 13px; cursor: pointer; list-style: none; }
     .faq summary::-webkit-details-marker { display: none; }
     .faq p { margin-top: 6px; font-size: 13px; color: var(--muted); }
     footer { margin-top: 24px; background: var(--green-dark); color: #fff; padding: 16px 0; }
@@ -207,13 +178,10 @@
     <div class="wrap nav">
       <div class="brand">
         <div class="mark">G</div>
-        <div>
-          GAMER DIGITAL
-          <small>Innovation Network · Kenya</small>
-        </div>
+        <div>GAMER DIGITAL<small>Innovation Network · Kenya</small></div>
       </div>
       <div class="nav-actions">
-        <a class="btn btn-outline" href="#deals">Deals</a>
+        <a class="btn btn-outline" href="agent.html">Agent</a>
         <a class="btn btn-green" id="waTop" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
@@ -222,21 +190,25 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Gift any number · Order ID tracking · Pay STK or Till · Independent fast shop</p>
+      <p id="heroSub">Gift any number · Airtel + Safaricom · Refer &amp; earn · STK or Till</p>
       <div class="pills">
-        <span class="pill">Okoa-friendly deals</span>
+        <span class="pill">Okoa-friendly</span>
         <span class="pill">Gift to friend</span>
-        <span class="pill">STK + Till</span>
-        <span class="pill">Order ID proof</span>
+        <span class="pill">Airtel deals</span>
+        <span class="pill">Referral codes</span>
       </div>
     </div>
   </section>
 
-  <div class="wrap trust" id="trustRow">
+  <div class="wrap">
+    <div class="ref-banner" id="refBanner"></div>
+  </div>
+
+  <div class="wrap trust">
     <div class="trust-item"><span>📱</span>Gift any number</div>
-    <div class="trust-item"><span>🧾</span>Order ID every sale</div>
-    <div class="trust-item"><span>⚡</span>STK or Till pay</div>
-    <div class="trust-item"><span>💬</span>WhatsApp support</div>
+    <div class="trust-item"><span>🧾</span>Order ID</div>
+    <div class="trust-item"><span>📶</span>Safaricom + Airtel</div>
+    <div class="trust-item"><span>🤝</span>Agent referrals</div>
   </div>
 
   <main class="wrap grid" id="deals">
@@ -246,6 +218,7 @@
         <button type="button" class="tab" data-tab="minutes">Minutes</button>
         <button type="button" class="tab" data-tab="sms">SMS</button>
         <button type="button" class="tab" data-tab="tunu">Tunukiwa</button>
+        <button type="button" class="tab" data-tab="airtel">Airtel</button>
         <button type="button" class="tab" data-tab="faq">FAQ</button>
       </div>
 
@@ -254,25 +227,26 @@
         <p class="section-note">Some deals once per day · Gift any Safaricom number</p>
         <div id="dataDeals"></div>
       </article>
-
       <article class="card panel" id="panel-minutes">
         <h2>Minute Deals</h2>
         <p class="section-note">Many can be bought multiple times daily</p>
         <div id="minuteDeals"></div>
       </article>
-
       <article class="card panel" id="panel-sms">
         <h2>SMS Deals</h2>
-        <p class="section-note">Bulk SMS · great for business &amp; alerts</p>
+        <p class="section-note">Bulk SMS</p>
         <div id="smsDeals"></div>
       </article>
-
       <article class="card panel" id="panel-tunu">
         <h2>Tunukiwa Deals</h2>
         <p class="section-note">Extra short-term packs</p>
         <div id="tunuDeals"></div>
       </article>
-
+      <article class="card panel" id="panel-airtel">
+        <h2>Airtel Deals</h2>
+        <p class="section-note">Delivery phone must be an Airtel line</p>
+        <div id="airtelDeals"></div>
+      </article>
       <article class="card panel faq" id="panel-faq">
         <h2>FAQ</h2>
         <div id="faqList"></div>
@@ -284,32 +258,31 @@
         <h3>LIPA NA M-PESA</h3>
         <p style="font-size:13px;color:var(--muted)">Buy Goods Till</p>
         <div class="till" id="tillDigits"></div>
-        <button class="btn btn-dark buy" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
+        <button class="btn btn-dark" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
         <ol class="steps">
-          <li>Buy → enter <b>delivery phone</b> (gift OK)</li>
-          <li>Pay with <b>STK</b> or till <b id="tillText"></b></li>
-          <li>Save your <b>Order ID</b></li>
+          <li>Buy → enter <b>delivery phone</b></li>
+          <li>Pay <b>STK</b> or till <b id="tillText"></b></li>
+          <li>Keep <b>Order ID</b></li>
           <li>We deliver after confirmation</li>
         </ol>
       </div>
-
       <div class="card" style="margin-top:12px">
         <h2>Why us</h2>
         <ul id="whyList" style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)"></ul>
-        <p class="legal">Independent reseller. Not Safaricom. Delivery after payment confirmation. Network rules apply (e.g. once/day limits).</p>
+        <p class="legal">Independent reseller. Not Safaricom / Airtel. Network rules apply.</p>
       </div>
-
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
-        <p style="margin-bottom:10px;font-size:13px;color:var(--muted)">Send Order ID + M-Pesa receipt if delayed.</p>
+        <p style="margin-bottom:10px;font-size:13px;color:var(--muted)">Order ID + M-Pesa receipt if delayed.</p>
         <a class="btn btn-green" id="waSide" target="_blank" rel="noopener" style="width:100%">Chat on WhatsApp</a>
+        <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent dashboard</a>
       </div>
     </aside>
   </main>
 
   <footer>
     <div class="wrap foot">
-      <div>Gamer Digital Services · Gamer Innovation Network (Kenya)</div>
+      <div>Gamer Digital Services · Gamer Innovation Network</div>
       <div id="footPhone"></div>
     </div>
   </footer>
@@ -321,18 +294,14 @@
     <div class="modal">
       <h3 id="modalTitle">Complete order</h3>
       <p class="sub" id="modalSub">Who should receive this deal?</p>
-
       <label for="phoneInput">Delivery phone (gift OK) *</label>
       <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
-      <p class="hint">Bundle is sent to this number — can be different from the payer.</p>
-      <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…, 10 digits).</p>
-
+      <p class="hint">Can differ from payer. Airtel deals → Airtel line.</p>
+      <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
       <label for="nameInput">Your name (optional)</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
-
       <div class="order-preview" id="orderPreview"></div>
       <div class="stk-status" id="stkStatus"></div>
-
       <div class="modal-actions">
         <button type="button" class="btn btn-green" id="modalStk" style="display:none">Pay with M-Pesa (STK)</button>
         <div class="modal-actions-row">
