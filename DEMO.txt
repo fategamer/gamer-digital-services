@@ -1,0 +1,7 @@
+LIVE DEMO
+=========
+Shop:  https://gamer-digital-services.vercel.app/
+Agent: https://gamer-digital-services.vercel.app/agent.html  (PIN 6872)
+Health: https://gamer-digital-services.vercel.app/api/health
+
+Flow: Buy or Gift → enter 07 number → Till + WhatsApp → Order ID created.
