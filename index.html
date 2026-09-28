@@ -3,25 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Gamer Digital Services — Data · Minutes · SMS · Airtel</title>
-  <meta name="description" content="Okoa-friendly data, gift a friend, referral codes. Safaricom + Airtel Kenya." />
+  <title>Gamer Digital Services — Prompt a friend · Gift data</title>
+  <meta name="description" content="Prompt a friend directly, gift data to any number. Okoa-friendly deals Kenya." />
   <meta name="theme-color" content="#00a651" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     :root {
       --green: #00a651; --green-dark: #007a3d; --green-soft: #e8f8ef;
       --red: #e10600; --ink: #102217; --muted: #4b5c52; --line: #d7eadf;
-      --white: #ffffff; --shadow: 0 10px 30px rgba(0, 80, 40, 0.08);
+      --shadow: 0 10px 30px rgba(0, 80, 40, 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Inter, system-ui, sans-serif; color: var(--ink); background: #f4faf6; line-height: 1.45; -webkit-tap-highlight-color: transparent; }
     a { color: inherit; text-decoration: none; }
-    button, .btn, .pill, .tab, .filter-chip, .btn-ghost { touch-action: manipulation; cursor: pointer; }
+    button, .btn, .pill, .tab, .filter-chip, .btn-ghost { touch-action: manipulation; cursor: pointer; font-family: inherit; }
     .wrap { width: min(1100px, calc(100% - 24px)); margin: 0 auto; }
-    header { background: var(--white); border-bottom: 3px solid var(--green); position: sticky; top: 0; z-index: 20; }
+    header { background: #fff; border-bottom: 3px solid var(--green); position: sticky; top: 0; z-index: 20; }
     .nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; gap: 12px; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
     .mark {
@@ -34,63 +32,79 @@
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       border: 0; border-radius: 999px; padding: 12px 16px; font-weight: 700;
-      cursor: pointer; font-size: 14px; font-family: inherit; min-height: 44px;
+      font-size: 14px; min-height: 44px;
     }
     .btn-green { background: var(--green); color: #fff; }
     .btn-dark { background: var(--ink); color: #fff; }
     .btn-outline { background: #fff; color: var(--green-dark); border: 2px solid var(--green); }
+    .btn-wa { background: #25D366; color: #fff; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .hero {
       background: linear-gradient(125deg, #00a651 0%, #006b36 55%, #0a3d24 100%);
-      color: #fff; padding: 36px 0 28px; margin-bottom: 14px;
+      color: #fff; padding: 32px 0 24px; margin-bottom: 14px;
     }
-    .hero h1 { font-size: clamp(26px, 5.5vw, 46px); line-height: 1.08; text-transform: uppercase; letter-spacing: -.4px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 42px); line-height: 1.1; text-transform: uppercase; }
     .hero p { margin-top: 10px; max-width: 560px; font-size: 15px; opacity: .95; }
-    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .pill {
       background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.5);
-      padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 800;
-      cursor: pointer; font-family: inherit; color: #fff; min-height: 44px;
+      padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #fff; min-height: 44px;
     }
-    .pill:active, .pill.on { background: #fff; color: var(--green-dark); border-color: #fff; }
+    .pill.on, .pill:active { background: #fff; color: var(--green-dark); }
     .ref-banner {
       display: none; background: #fef3c7; color: #92400e; font-size: 14px; font-weight: 800;
-      text-align: center; padding: 12px; margin-bottom: 12px; border-radius: 10px;
-      border: 2px solid #f59e0b;
+      text-align: center; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 2px solid #f59e0b;
     }
     .ref-banner.show { display: block; }
+    .prompt-card {
+      background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 16px;
+      margin-bottom: 14px; box-shadow: var(--shadow);
+    }
+    .prompt-card h2 {
+      font-size: 16px; color: var(--green-dark); margin-bottom: 6px;
+    }
+    .prompt-card .lead { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .prompt-card label { display: block; font-size: 12px; font-weight: 800; margin: 10px 0 4px; }
+    .prompt-card input, .prompt-card select, .prompt-card textarea {
+      width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 12px;
+      font-size: 16px; font-family: inherit;
+    }
+    .prompt-card textarea { min-height: 70px; resize: vertical; }
+    .prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .prompt-actions .btn { flex: 1; min-width: 140px; }
+    .preview-box {
+      margin-top: 12px; background: #f0f4f2; border-radius: 12px; padding: 12px;
+      font-size: 13px; white-space: pre-wrap; display: none; color: var(--ink);
+    }
+    .preview-box.show { display: block; }
     .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     @media (max-width: 640px) { .tools { grid-template-columns: 1fr; } }
     .tool-card {
-      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px;
-      box-shadow: var(--shadow);
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: var(--shadow);
     }
     .tool-card h3 { font-size: 14px; margin-bottom: 8px; color: var(--green-dark); }
     .tool-card input {
       width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 10px;
-      font-size: 16px; font-family: inherit; margin-bottom: 8px;
+      font-size: 16px; margin-bottom: 8px; font-family: inherit;
     }
     .tool-row { display: flex; gap: 8px; }
     .tool-row .btn { flex: 1; }
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .filter-chip {
       border: 2px solid var(--line); background: #fff; border-radius: 999px;
-      padding: 10px 14px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
-      color: var(--muted); min-height: 44px;
+      padding: 10px 14px; font-size: 13px; font-weight: 800; color: var(--muted); min-height: 44px;
     }
     .filter-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
     .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
     .tab {
-      flex: 0 0 auto; border: 2px solid var(--line); background: #fff;
-      border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 14px;
-      cursor: pointer; color: var(--muted); font-family: inherit; min-height: 44px;
+      flex: 0 0 auto; border: 2px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 10px 16px; font-weight: 800; font-size: 14px; color: var(--muted); min-height: 44px;
     }
     .tab.active { background: var(--green); border-color: var(--green); color: #fff; }
     .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     .card {
-      background: #fff; border: 1px solid var(--line); border-radius: 18px;
-      padding: 14px; box-shadow: var(--shadow);
+      background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: var(--shadow);
     }
     .card h2 {
       display: inline-flex; background: var(--green); color: #fff; font-size: 13px;
@@ -113,17 +127,15 @@
     .chip.badge-MONTHLY, .chip.badge-COMBO, .chip.badge-WEEKLY { background: #e0e7ff; color: #3730a3; }
     .chip.airtel { background: #fce7f3; color: #9d174d; }
     .chip.okoa { background: #d1fae5; color: #065f46; }
-    .chip.warn { background: #fff7ed; color: #c2410c; }
     .deal-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .price {
       background: var(--green-soft); color: var(--green-dark);
-      font-weight: 900; padding: 8px 10px; border-radius: 10px; white-space: nowrap; font-size: 14px;
+      font-weight: 900; padding: 8px 10px; border-radius: 10px; font-size: 14px;
     }
     .btn-sm { padding: 10px 14px; font-size: 13px; min-height: 42px; }
     .btn-ghost {
       background: transparent; border: 1px solid var(--line); color: var(--muted);
-      padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
-      font-family: inherit; min-height: 42px;
+      padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; min-height: 42px;
     }
     .pay { background: #fff; border: 2px solid var(--green); border-radius: 18px; padding: 14px; text-align: center; }
     .pay h3 { color: var(--green-dark); font-size: 16px; margin-bottom: 6px; }
@@ -139,7 +151,7 @@
     .faq summary::-webkit-details-marker { display: none; }
     .faq p { margin-top: 6px; font-size: 13px; color: var(--muted); }
     footer { margin-top: 24px; background: var(--green-dark); color: #fff; padding: 16px 0; }
-    .foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+    .foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; }
     .wa-float {
       position: fixed; right: 14px; bottom: 14px; z-index: 30;
       background: #25D366; color: #fff; border-radius: 999px;
@@ -158,24 +170,20 @@
     .modal-backdrop.open { display: flex; pointer-events: auto; }
     .modal {
       background: #fff; width: min(420px, 100%); border-radius: 18px;
-      padding: 18px 16px; box-shadow: 0 20px 50px rgba(0,0,0,.25);
-      max-height: 92vh; overflow-y: auto; pointer-events: auto;
+      padding: 18px 16px; max-height: 92vh; overflow-y: auto; pointer-events: auto;
     }
-    .modal h3 { font-size: 17px; margin-bottom: 2px; }
+    .modal h3 { font-size: 17px; }
     .modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
     .modal label { display: block; font-size: 13px; font-weight: 800; margin: 12px 0 4px; }
     .modal input {
-      width: 100%; padding: 14px 12px; border: 2px solid var(--line);
-      border-radius: 12px; font-size: 16px; font-family: inherit;
+      width: 100%; padding: 14px 12px; border: 2px solid var(--line); border-radius: 12px; font-size: 16px;
     }
-    .modal input:focus { outline: none; border-color: var(--green); }
     .modal .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
     .modal .error { color: var(--red); font-size: 13px; font-weight: 700; margin-top: 6px; display: none; }
-    .seg { display: flex; gap: 8px; margin-bottom: 4px; }
+    .seg { display: flex; gap: 8px; }
     .seg button {
       flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 12px;
-      padding: 12px 8px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit;
-      color: var(--muted); min-height: 48px;
+      padding: 12px 8px; font-weight: 800; font-size: 13px; color: var(--muted); min-height: 48px;
     }
     .seg button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
     .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
@@ -183,9 +191,8 @@
     .modal-actions-row .btn { flex: 1; }
     .order-preview {
       background: var(--green-soft); border-radius: 12px; padding: 10px 12px;
-      margin-top: 10px; font-size: 13px; display: none;
+      margin-top: 10px; font-size: 13px; display: none; white-space: pre-wrap;
     }
-    .order-preview strong { color: var(--green-dark); }
     .stk-status {
       margin-top: 8px; font-size: 13px; font-weight: 700; display: none;
       padding: 10px; border-radius: 10px; background: #f0f4f2;
@@ -197,7 +204,7 @@
     .empty { padding: 16px; text-align: center; color: var(--muted); font-size: 13px; }
     #bootError {
       display: none; background: #fde8e8; color: #b91c1c; padding: 12px; margin: 12px auto;
-      max-width: 1100px; border-radius: 10px; font-weight: 700; font-size: 14px;
+      max-width: 1100px; border-radius: 10px; font-weight: 700;
     }
   </style>
 </head>
@@ -220,31 +227,63 @@
   <section class="hero">
     <div class="wrap">
       <h1>Pata Data<br>Hata Ukiwa na Okoa</h1>
-      <p id="heroSub">Okoa filter · Gift a friend · Referral codes · STK or Till</p>
+      <p id="heroSub">Prompt a friend · Gift any number · Order ID · Till pay</p>
       <div class="pills">
+        <button type="button" class="pill" id="pillPrompt">Prompt a friend</button>
         <button type="button" class="pill" id="pillOkoa">Okoa-friendly</button>
-        <button type="button" class="pill" id="pillGift">Gift to friend</button>
-        <button type="button" class="pill" id="pillRef">Referral codes</button>
-        <button type="button" class="pill" id="pillAirtel">Airtel deals</button>
+        <button type="button" class="pill" id="pillGift">Gift deal</button>
+        <button type="button" class="pill" id="pillRef">Referral</button>
+        <button type="button" class="pill" id="pillAirtel">Airtel</button>
       </div>
     </div>
   </section>
 
   <div class="wrap">
     <div class="ref-banner" id="refBanner"></div>
+
+    <!-- PROMPT A FRIEND — main feature -->
+    <div class="prompt-card" id="promptCard">
+      <h2>📱 Prompt a friend directly</h2>
+      <p class="lead">
+        Enter their number → we build a clear WhatsApp message for them.
+        Then order the deal to that same number (you pay, they receive).
+      </p>
+
+      <label for="promptPhone">Friend's phone number *</label>
+      <input id="promptPhone" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
+
+      <label for="promptName">Your name (shows in message)</label>
+      <input id="promptName" type="text" placeholder="e.g. Jane" maxlength="40" />
+
+      <label for="promptDeal">Deal to mention (optional)</label>
+      <select id="promptDeal">
+        <option value="">— Pick a deal —</option>
+      </select>
+
+      <label for="promptNote">Extra note (optional)</label>
+      <textarea id="promptNote" placeholder="e.g. Nimekulipia data ya jioni"></textarea>
+
+      <div class="preview-box" id="promptPreview"></div>
+
+      <div class="prompt-actions">
+        <button type="button" class="btn btn-wa" id="btnPromptFriend">1. WhatsApp the friend</button>
+        <button type="button" class="btn btn-green" id="btnOrderForFriend">2. Order for this number</button>
+      </div>
+    </div>
+
     <div class="tools">
       <div class="tool-card" id="refTool">
         <h3>Referral code</h3>
-        <input id="refInput" type="text" placeholder="e.g. JANE01" maxlength="16" autocomplete="off" />
+        <input id="refInput" type="text" placeholder="e.g. JANE01" maxlength="16" />
         <div class="tool-row">
-          <button type="button" class="btn btn-green" id="applyRef">Apply code</button>
+          <button type="button" class="btn btn-green" id="applyRef">Apply</button>
           <button type="button" class="btn btn-outline" id="clearRef">Clear</button>
         </div>
-        <p id="refStatus" style="font-size:12px;color:var(--muted);margin-top:8px">No code applied yet</p>
+        <p id="refStatus" style="font-size:12px;color:var(--muted);margin-top:8px">No code yet</p>
       </div>
       <div class="tool-card">
-        <h3>Gift a friend</h3>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Pay from your line, deliver to theirs.</p>
+        <h3>Quick gift</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Skip prompt — open order as gift.</p>
         <button type="button" class="btn btn-dark" id="startGift" style="width:100%">Start gift order</button>
       </div>
     </div>
@@ -252,7 +291,7 @@
 
   <main class="wrap grid" id="deals">
     <div>
-      <div class="tabs" role="tablist">
+      <div class="tabs">
         <button type="button" class="tab active" data-tab="data">Data</button>
         <button type="button" class="tab" data-tab="minutes">Minutes</button>
         <button type="button" class="tab" data-tab="sms">SMS</button>
@@ -260,38 +299,20 @@
         <button type="button" class="tab" data-tab="airtel">Airtel</button>
         <button type="button" class="tab" data-tab="faq">FAQ</button>
       </div>
-
       <div class="filter-bar" id="dataFilters">
         <button type="button" class="filter-chip on" data-filter="all">All data</button>
         <button type="button" class="filter-chip" data-filter="okoa">Okoa only</button>
       </div>
-
       <article class="card panel active" id="panel-data">
         <h2>Data Deals</h2>
-        <p class="section-note" id="dataNote">Tap Buy or Gift</p>
+        <p class="section-note" id="dataNote">Buy for self · Gift for friend</p>
         <div id="dataDeals"></div>
       </article>
-      <article class="card panel" id="panel-minutes">
-        <h2>Minute Deals</h2>
-        <div id="minuteDeals"></div>
-      </article>
-      <article class="card panel" id="panel-sms">
-        <h2>SMS Deals</h2>
-        <div id="smsDeals"></div>
-      </article>
-      <article class="card panel" id="panel-tunu">
-        <h2>Tunukiwa Deals</h2>
-        <div id="tunuDeals"></div>
-      </article>
-      <article class="card panel" id="panel-airtel">
-        <h2>Airtel Deals</h2>
-        <p class="section-note">Airtel line only</p>
-        <div id="airtelDeals"></div>
-      </article>
-      <article class="card panel faq" id="panel-faq">
-        <h2>FAQ</h2>
-        <div id="faqList"></div>
-      </article>
+      <article class="card panel" id="panel-minutes"><h2>Minutes</h2><div id="minuteDeals"></div></article>
+      <article class="card panel" id="panel-sms"><h2>SMS</h2><div id="smsDeals"></div></article>
+      <article class="card panel" id="panel-tunu"><h2>Tunukiwa</h2><div id="tunuDeals"></div></article>
+      <article class="card panel" id="panel-airtel"><h2>Airtel</h2><p class="section-note">Airtel line only</p><div id="airtelDeals"></div></article>
+      <article class="card panel faq" id="panel-faq"><h2>FAQ</h2><div id="faqList"></div></article>
     </div>
 
     <aside>
@@ -299,12 +320,12 @@
         <h3>LIPA NA M-PESA</h3>
         <p style="font-size:13px;color:var(--muted)">Buy Goods Till</p>
         <div class="till" id="tillDigits"></div>
-        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%;margin-top:4px">Copy till number</button>
+        <button type="button" class="btn btn-dark" id="copyTill" style="width:100%">Copy till</button>
         <ol class="steps">
-          <li>Tap <b>Buy</b> or <b>Gift</b></li>
-          <li>Enter phone number</li>
+          <li><b>Prompt</b> friend (optional)</li>
+          <li><b>Order</b> with their number</li>
           <li>Pay till <b id="tillText"></b></li>
-          <li>Keep your <b>Order ID</b></li>
+          <li>Keep <b>Order ID</b></li>
         </ol>
       </div>
       <div class="card" style="margin-top:12px">
@@ -314,7 +335,7 @@
       <div class="card" style="margin-top:12px">
         <h2>Support</h2>
         <a class="btn btn-green" id="waSide" target="_blank" rel="noopener" style="width:100%">Chat on WhatsApp</a>
-        <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent dashboard</a>
+        <a class="btn btn-outline" href="agent.html" style="width:100%;margin-top:8px">Agent</a>
       </div>
     </aside>
   </main>
@@ -337,36 +358,35 @@
       <label>Who is this for?</label>
       <div class="seg">
         <button type="button" class="on" id="modeSelf">Myself</button>
-        <button type="button" id="modeGift">Gift a friend</button>
+        <button type="button" id="modeGift">Gift / Prompt friend</button>
       </div>
 
       <label for="phoneInput" id="phoneLabel">Phone (receives deal) *</label>
       <input id="phoneInput" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" autocomplete="tel" />
-      <p class="hint" id="phoneHint">Bundle loads on this number.</p>
-      <p class="error" id="phoneError">Enter a valid Kenyan number (07… or 01…).</p>
+      <p class="hint" id="phoneHint">This number gets the bundle.</p>
+      <p class="error" id="phoneError">Enter valid Kenyan number (07… or 01…).</p>
 
       <label for="nameInput" id="nameLabel">Name (optional)</label>
-      <input id="nameInput" type="text" placeholder="e.g. Jane" maxlength="40" />
+      <input id="nameInput" type="text" placeholder="Your name or friend's name" maxlength="40" />
 
-      <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">
-        Okoa-friendly deal
-      </div>
+      <div id="okoaNote" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:10px;font-size:13px;font-weight:700;color:#065f46">Okoa-friendly deal</div>
       <div id="refNote" style="display:none;margin-top:8px;padding:10px;background:#fef3c7;border-radius:10px;font-size:13px;font-weight:700;color:#92400e"></div>
 
       <div class="order-preview" id="orderPreview"></div>
       <div class="stk-status" id="stkStatus"></div>
 
       <div class="modal-actions">
-        <button type="button" class="btn btn-green" id="modalStk" style="display:none">Pay with M-Pesa (STK)</button>
+        <button type="button" class="btn btn-green" id="modalStk" style="display:none">Pay M-Pesa (STK)</button>
+        <button type="button" class="btn btn-wa" id="modalNotifyFriend" style="display:none">Also notify friend on WhatsApp</button>
         <div class="modal-actions-row">
           <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
-          <button type="button" class="btn btn-dark" id="modalConfirm">Till + WhatsApp</button>
+          <button type="button" class="btn btn-dark" id="modalConfirm">Pay till + WhatsApp shop</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="config.js?v=demo1"></script>
-  <script src="app.js?v=demo1"></script>
+  <script src="config.js?v=prompt2"></script>
+  <script src="app.js?v=prompt2"></script>
 </body>
 </html>
